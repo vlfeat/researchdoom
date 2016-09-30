@@ -1,0 +1,3 @@
+[submodule "matlab/coco"]
+	path = matlab/coco
+	url = https://github.com/pdollar/coco
