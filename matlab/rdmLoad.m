@@ -32,7 +32,7 @@ names = dir(fullfile(basePath, 'rgb', '*.png')) ;
 names = {names.name} ;
 ids = regexp(names,'\d+', 'match') ;
 for i = 1:numel(ids)
-  rdb.ticks.id(i) = sscanf(ids{i}{1},'%d') ;
+  rdb.tics.id(i) = sscanf(ids{i}{1},'%d') ;
 end
 
 tokens = regexp(text, '(\d+) level loaded: ([\d\w]+)', 'tokens', 'dotexceptnewline') ;
@@ -41,7 +41,7 @@ for i = 1:numel(tokens)
   rdb.levels.name{i} = tokens{i}{2} ;
   rdb.levels.startTic(i) = sscanf(tokens{i}{1},'%d') ;
 end
-rdb.levels.endTic = [rdb.levels.startTic(2:end)-1, max(rdb.ticks.id)] ;
+rdb.levels.endTic = [rdb.levels.startTic(2:end)-1, max(rdb.tics.id)] ;
 
 tokens = regexp(text, '(\d+) player:([\d-.,]+)', 'tokens', 'dotexceptnewline') ;
 for i = 1:numel(tokens)

@@ -6,8 +6,8 @@ basePath = '/Users/vedaldi/Desktop/doomrecord'  ;
 rdb = rdmLoad(basePath) ;
 
 figure(100) ; clf ;
-subplot(1,2,1) ; plot([rdb.objects.endTic(:),rdb.objects.startTic(:)]) ; legend('start', 'end') ; ylabel('tick') ;
-subplot(1,2,2) ; plot([rdb.objects.endTic(:)-rdb.objects.startTic(:)]) ; title('duration') ; ylabel('tick') ;
+subplot(1,2,1) ; plot([rdb.objects.endTic(:),rdb.objects.startTic(:)]) ; legend('start', 'end') ; ylabel('tic') ;
+subplot(1,2,2) ; plot([rdb.objects.endTic(:)-rdb.objects.startTic(:)]) ; title('duration') ; ylabel('tic') ;
 drawnow ;
 
 figure(101) ; clf ;
@@ -22,7 +22,7 @@ axis equal ;
 
 v = VideoWriter('~/Desktop/out3.mp4', 'MPEG-4') ;
 open(v) ;
-for tic = rdb.ticks.id(1:min(numel(rdb.ticks.id),2e3))
+for tic = rdb.tics.id(1:min(numel(rdb.tics.id),2e3))
   rdmGetFrame(rdb, tic) ;
   writeVideo(v, getframe(1)) ;
 end
