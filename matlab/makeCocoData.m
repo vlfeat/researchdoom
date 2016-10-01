@@ -19,11 +19,13 @@ function makeCocoData(rdmDir, cocoDir, varargin)
 %run vlfeat/toolbox/vl_setup ; % Hardcoded path
 
 opts.runId = 1 ;
+opts.runName = 'run1' ;
 opts.ticSkip = 1 ;
 opts.useSymlinks = true ;
 opts = vl_argparse(opts, varargin) ;
 
 % Load ResearchDoom database.
+fprintf('Loading ResearchDoom database %s\n', rdmDir) ;
 rdb = rdmLoad(rdmDir) ;
 
 % Prepare output directory.
@@ -38,23 +40,23 @@ for levelId = 1:numel(rdb.levels.name)
   vl_xmkdir(fullfile(levelDir, 'rgb')) ;
   vl_xmkdir(fullfile(levelDir, 'depth')) ;
   vl_xmkdir(fullfile(levelDir, 'objects')) ;
-  
+
   ticStart = rdb.levels.startTic(levelId) ;
   ticEnd = rdb.levels.endTic(levelId) ;
   tics = [rdb.tics.id] ;
   tics = tics(ticStart <= tics & tics <= ticEnd) ;
-  
+
   imageTxt = {} ;
   objectTxt = {} ;
-  
+
   % Extract indifidual frames.
   for tic = tics(1:ticSkip:end)
     frame = rdmGetFrame(rdb, tic) ;
-    
+
     imwrite_if_notexist(frame.rgb,double(frame.rgbcols),fullfile(levelDir,'rgb',imageName)) ;
     imwrite_if_notexist(frame.depthmap, [], fullfile(levelDir,'depth',imageName)) ;
     imwrite_if_notexist(frame.objectmap,[], fullfile(levelDir,'objects',imageName)) ;
-    
+
     % Get image entry in Coco format.
     imageId = 10e8 * runId + 10e6 * levelId + tic ;
     imageName = sprintf('%06d.png', tic) ;
@@ -69,7 +71,7 @@ for levelId = 1:numel(rdb.levels.name)
       '"coco_url":"",' ...
       '"date_captured":"%s"}\n'], ...
       imageId, fullfile(qualPath, 'rgb', imageName), datetime);
-    
+
     % Extract all objects from the frame, find polygonal contour,
     % and get a string in  Coco format.
     for i = 1:numel(frame.objects.id)
@@ -113,10 +115,10 @@ for levelId = 1:numel(rdb.levels.name)
       runName, levelId, numel(rdb.levels.name), ...
       tic, max(tics));
   end
-  
-  imageTxt = sprintf('%s', strjoin(imageTxt,',')) ;  
+
+  imageTxt = sprintf('%s', strjoin(imageTxt,',')) ;
   objectTxt = sprintf('%s', strjoin(objectTxt,',')) ;
-  
+
   % MS Cooco object categories.
   catTxt = {};
   for c = 1:numel(rdb.classes.label)
@@ -129,8 +131,8 @@ for levelId = 1:numel(rdb.levels.name)
       rdb.classes.name{c}) ;
   end
   catTxt = sprintf('%s', strjoin(catTxt,',')) ;
-  
-  % MS Coco info. 
+
+  % MS Coco info.
   infoTxt = sprintf([...
     '{' ...
     '"year":2016,' ...
@@ -142,17 +144,17 @@ for levelId = 1:numel(rdb.levels.name)
     datetime) ;
 
   % MS Coco lincense.
-  licenseTxt = '{"id":1,"name":"rdoom","url":""}' ;  
-  
+  licenseTxt = '{"id":1,"name":"rdoom","url":""}' ;
+
   % MS Coco annotation file.
   cocoTxt = sprintf(...
     '{"info":%s,"images":[%s],"annotations":[%s],"categories":[%s],"licenses":[%s]}', ...
     infoTxt, imageTxt, objctTxt, catTxt, licenseTxt) ;
-  
+
   writeText(fullfile(levelDir, 'images.json'), imageTxt) ;
-  writeText(fullfile(levelDir, 'objects.json'), objectTxt) ;  
-  writeText(fullfile(levelDir, 'categories.json'), catTxt) ;  
-  writeText(fullfile(levelDir, 'info.json'), infoTxt) ;  
+  writeText(fullfile(levelDir, 'objects.json'), objectTxt) ;
+  writeText(fullfile(levelDir, 'categories.json'), catTxt) ;
+  writeText(fullfile(levelDir, 'info.json'), infoTxt) ;
   writeText(fullfile(levelDir, 'license.json'), licenseTxt) ;
   writeText(fullfile(levelDir, 'coco.json'), cocoTxt) ;
 end

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RECORD=./engines/chocolate/bin/rdm-record.sh
+ENGINE=./engines/chocolate/bin/rdm-record.sh
 COCODOOM_DIR=./data/cocodoom-raw
 COCODOOM_TMPDIR=./data/tmp
 WAD_DIR=./data/wads
@@ -16,10 +16,12 @@ function get_lmp() {
 }
 
 function record() {
-    mkdir -p $COCODOOM_DIR/run$1
-    ${RECORD} ${WAD_DIR}/$2.wad \
+    if test -e ${COCODOOM_DIR}/run$1/.done; then return ; fi
+    mkdir -p ${COCODOOM_DIR}/run$1
+    ${ENGINE} ${WAD_DIR}/$2.wad \
               ${COCODOOM_TMPDIR}/lmps/$3.lmp \
               ${COCODOOM_DIR}/run$1
+    touch ${COCODOOM_DIR}/run$1/.done
 }
 
 get_lmp 30uvmax3           http://doomedsda.us/lmps/945/1/30uvmax3.zip
