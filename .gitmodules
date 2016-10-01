@@ -1,3 +1,6 @@
 [submodule "matlab/coco"]
 	path = matlab/coco
 	url = https://github.com/pdollar/coco
+[submodule "engines/chocolate"]
+	path = engines/chocolate
+	url = git@bitbucket.org:ovl/researchdoom-chocolate.git
