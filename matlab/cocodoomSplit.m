@@ -1,5 +1,5 @@
-function packCocoData()
-%PACKCOCODATA
+function cocodoomPack()
+%COCODOOMSPLIT   Generate standard Cocodoom splits.
 
 addpath matlab ;
 addpath matlab/coco/MatlabAPI ;
@@ -25,13 +25,13 @@ for run = 1:1
   end
 end
 
-full{end+1} = combineCocoData(train, 'data/cocodoom/episode-full-train.json') ;
-full{end+1} = combineCocoData(val,   'data/cocodoom/episode-full-val.json') ;
-full{end+1} = combineCocoData(test,  'data/cocodoom/episode-full-test.json') ;
+full{end+1} = cocodoomCombine(train, 'data/cocodoom/episode-full-train.json') ;
+full{end+1} = cocodoomCombine(val,   'data/cocodoom/episode-full-val.json') ;
+full{end+1} = cocodoomCombine(test,  'data/cocodoom/episode-full-test.json') ;
 
-standard{end+1} = combineCocoData(train, 'data/cocodoom/episode-train.json', 'skip', 5) ;
-standard{end+1} = combineCocoData(val,   'data/cocodoom/episode-val.json',   'skip', 20) ;
-standard{end+1} = combineCocoData(test,  'data/cocodoom/episode-test.json',  'skip', 20) ;
+standard{end+1} = cocodoomCombine(train, 'data/cocodoom/episode-train.json', 'skip', 5) ;
+standard{end+1} = cocodoomCombine(val,   'data/cocodoom/episode-val.json',   'skip', 20) ;
+standard{end+1} = cocodoomCombine(test,  'data/cocodoom/episode-test.json',  'skip', 20) ;
 
 % --------------------------------------------------------------------
 % Get player splits
@@ -53,14 +53,13 @@ for run = 1:1
   end
 end
 
-full{end+1} = combineCocoData(train, 'data/cocodoom/run-full-train.json') ;
-%full{end+1} = combineCocoData(val,   'data/cocodoom/run-full-val.json') ;
-%full{end+1} = combineCocoData(test,  'data/cocodoom/run-full-test.json') ;
+full{end+1} = cocodoomCombine(train, 'data/cocodoom/run-full-train.json') ;
+%full{end+1} = cocodoomCombine(val,   'data/cocodoom/run-full-val.json') ;
+%full{end+1} = cocodoomCombine(test,  'data/cocodoom/run-full-test.json') ;
 
-standard{end+1} = combineCocoData(train, 'data/cocodoom/run-train.json', 'skip', 5) ;
-%standard{end+1} = combineCocoData(val,   'data/cocodoom/run-val.json',   'skip', 20) ;
-%standard{end+1} = combineCocoData(test,
-%'data/cocodoom/run-test.json',  'skip', 20) ;
+standard{end+1} = cocodoomCombine(train, 'data/cocodoom/run-train.json', 'skip', 5) ;
+%standard{end+1} = cocodoomCombine(val, 'data/cocodoom/run-val.json',   'skip', 20) ;
+%standard{end+1} = cocodoomCombine(test, 'data/cocodoom/run-test.json',  'skip', 20) ;
 
 standard = strjoin(unique(horzcat(standard{:})),'\n') ;
 full = strjoin(unique(horzcat(full{:})),'\n') ;

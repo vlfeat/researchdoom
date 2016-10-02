@@ -1,6 +1,6 @@
-function makeCocoData(rdmDir, cocoDir, varargin)
-%MAKECOCODATA   Convert ResearchDoom output to Coco
-%    MAKECOCODATA(RDMDIR, COCODIR) takes the ResearchDoom recording and converst it in
+function cocodoomMake(rdmDir, cocoDir, varargin)
+%COCODOOMMAKE   Convert ResearchDoom output to Coco
+%    COCODOOMMAKE(RDMDIR, COCODIR) takes the ResearchDoom recording and converst it in
 %    MS Coco format.
 %
 %    Arguments

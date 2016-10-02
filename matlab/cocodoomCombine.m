@@ -1,5 +1,5 @@
-function images = combineCocoData(src, dst, varargin)
-%COMBINECOCODATA
+function images = cocodoomCombine(src, dst, varargin)
+%COCODOOMCOMBINE   Merge CocoDoom annotation files.
 opts.skip = 1 ;
 opts = vl_argparse(opts, varargin) ;
 

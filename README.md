@@ -32,9 +32,9 @@ Generating the CocoDoom data from scratch is a multi-step approach:
 
 1. Use `scripts/cocodoom-record.sh` to extract the raw *CocoDoom* data using the `engines/chocolate/bin/doom` game engine.
 
-2. Use `matlab/genCocoData.m` to extract the CocoDoom annotation files from the raw data.
+2. Use `matlab/cocodoomGen.m` to extract the CocoDoom annotation files from the raw data.
 
-3. Use `matlab/splitCocoData.m` to generate the various data splits.
+3. Use `matlab/cocodoomSplit.m` to generate the various data splits.
 
 4. Use `scripts/cocodoom-pack.sh` to generate the `.tar.gz` archives.
 
