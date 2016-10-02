@@ -9,13 +9,17 @@ frame.depthmap = imread(fullfile(...
 
 frame.objectmap = imread(fullfile(...
   rdb.basePath, 'objects', sprintf('%06d.png', tic))) ;
+frame.objectmap = ...
+    uint32(frame.objectmap(:,:,1)) + ...
+    uint32(frame.objectmap(:,:,2)) * uint32(2^8) + ...
+    uint32(frame.objectmap(:,:,3)) * uint32(2^16) ;
 
 % Extract visible object identities and bounding boxes
 [ids,~,map] = unique(frame.objectmap) ;
 map = reshape(map, size(frame.objectmap)) ;
 ids = ids' ;
 eids = 1:numel(ids) ; % enumerate objects from 1 to n in this image
-eids(ids >= 2^14) = 0 ; % assign id 0 to sky,walls,ground/ceiling
+eids(ids >= 2^23) = 0 ; % assign id 0 to sky,walls,ground/ceiling
 props = regionprops(eids(map),'basic') ;
 
 ids = ids(1,1:numel(props)) ;
@@ -30,12 +34,12 @@ frame.objects.frameId = ids ;
 frame.objects.id = zeros(size(frame.objects.frameId)) ;
 frame.objects.box = boxes ;
 
-% This is still not quite enough. The object ids are modulus 2^14. We need
+% This is still not quite enough. The object ids are modulus 2^23. We need
 % to find the original ID by matching the annotation file -- as well as
 % the object type
 
 for i = 1:numel(frame.objects.frameId)
-  ok1 = mod(rdb.objects.id, 2^14) == frame.objects.frameId(i) ;
+  ok1 = mod(rdb.objects.id, 2^23) == frame.objects.frameId(i) ;
   ok2 = rdb.objects.startTic <= tic ;
   ok3 = rdb.objects.endTic >= tic ;
   sel = find(ok1 & ok2 & ok3) ;
@@ -69,10 +73,10 @@ if nargout == 0
   dy = 200 / 2 ;
   set(gcf, 'windowstyle', 'normal') ;
   set(gcf,'units', 'pixels', 'position',[10 400 4*dx dy]) ;
-  objcols = jet(2^16) ;
-  objcols(2^14+1,:) = [1 1 0] ;
-  objcols(2^14+2,:) = [0 1 0] ;
-  objcols(2^14+3,:) = [0 0 1] ;
+  objcols = jet(2^8) ;
+  objcols(2^7+1,:) = [1 1 0] ;
+  objcols(2^7+2,:) = [0 1 0] ;
+  objcols(2^7+3,:) = [0 0 1] ;
   depthcols = gray(2^16) ;
 
   axes('units', 'pixels', 'position',[1 1 dx dy]) ;
@@ -94,7 +98,9 @@ if nargout == 0
   makeText(1,2,dx,dy,'Depth map') ;
 
   axes('units', 'pixels', 'position',[2*dx+1, 1, dx, dy]) ;
-  imagesc(ind2rgb(frame.objectmap,objcols)) ;
+  objmap = bitand(frame.objectmap, 255) ;
+  objmap(frame.objectmap >= 2^23) = objmap(frame.objectmap >= 2^23) + 2^7 ;
+  imagesc(ind2rgb(objmap,objcols)) ;
   axis image off ;
   makeText(1,3,dx,dy,'Class and instance segmentation') ;
 
