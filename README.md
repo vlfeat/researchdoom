@@ -28,11 +28,17 @@ The code offers a large number of additional options to tune the output. It is a
 
 ## CocoDoom
 
-The script `scripts/cocodoom-record.sh` can be used to extract the *CocoDoom* data from scratch. Then, further processing needs to be used to convert this data in the MS Coco format, as explained below.
+Generating the CocoDoom data from scratch is a multi-step approach:
 
-The main conversion script is `makeCocoData.m`. This can take the output of `engines/chocolate/rdm-record.sh` and extract a JSON annotation file compatible with the MS Coco API. Please look at the function header in this file for documentation on how to use it. This function will take several hours if run on a long demo. 
+1. Use `scripts/cocodoom-record.sh` to extract the raw *CocoDoom* data using the `engines/chocolate/bin/doom` game engine.
 
-> In rare case, NaNs will appear in the generated `anno.json` filed due to limitations in the number of trackable objects. These can be moved using `cat anno.json | grep -v "NaN" > anno2.json`. This will cause the corresponding object annotations to be dropped; this is rarely a problem as it usually affect at most a tiny fraction of the occurrence (or none at all).
+2. Use `matlab/genCocoData.m` to extract the CocoDoom annotation files from the raw data.
+
+3. Use `matlab/splitCocoData.m` to generate the various data splits.
+
+4. Use `scripts/cocodoom-pack.sh` to generate the `.tar.gz` archives.
+
+The main conversion script is `makeCocoData.m`. This can take the output of `engines/chocolate/rdm-record.sh` and extract a JSON annotation file compatible with the MS Coco API. Please look at the function header in this file for documentation on how to use it. This function will take several hours if run on a long demo.
 
 ### Train-val-test splits
 
