@@ -27,7 +27,7 @@ rdb = rdmLoad(rdmDir) ;
 mkdir(fullfile(cocoDir,opts.runName)) ;
 
 % Break run in levels.
-for levelId = 1:numel(rdb.levels.name)
+parfor levelId = 1:numel(rdb.levels.name)
   %levelName = rdb.levels.name{levelId} ;
   levelName = sprintf('map%02d', levelId) ;
   qualPath = fullfile(opts.runName, levelName) ;
@@ -106,10 +106,9 @@ for levelId = 1:numel(rdb.levels.name)
           plot(onePolyVerySimple(1,2:end),onePolyVerySimple(2,2:end),'wd--');
           keyboard
         end
-        txt = cellfun(@(x)sprintf('%.1f',x), ...
+        txt = cellfun(@(x)sprintf('%g',x), ...
                       num2cell(onePolyVerySimple(:)-0.5),'uniformoutput',0) ;
         polyTxt{end+1} = sprintf('[%s]',strjoin(txt,',')) ;
-        polyBegin = polyEnd + 1 ;
       end
       polyTxt = sprintf('[%s]',strjoin(polyTxt,',')) ;
       box = frame.objects.box(:,i)-1 ;

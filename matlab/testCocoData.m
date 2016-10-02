@@ -1,6 +1,6 @@
 %TESTCOCODATA
 
-opts.cocoPath = 'data/cocodoom/run1/map01/coco.json' ;
+opts.cocoPath = 'data/cocodoom/run1/map04/coco.json' ;
 opts.dataPath = 'data/cocodoom' ;
 
 addpath matlab/coco/MatlabAPI
@@ -8,7 +8,7 @@ addpath matlab/coco/MatlabAPI
 coco = CocoApi(opts.cocoPath) ;
 imageIds = coco.getImgIds() ;
 
-for t = 1:numel(imageIds)
+for t = 100:numel(imageIds)
   imageId = imageIds(t) ;
   imageInfo = coco.loadImgs(imageId) ;
   annoIds = coco.getAnnIds('imgIds', imageId) ;
@@ -28,10 +28,11 @@ for t = 1:numel(imageIds)
   subplot(2,1,2);
   depth_filename  = strrep(imageInfo.file_name, 'rgb', 'depth');
   imagesc(imread(fullfile(opts.dataPath, depth_filename))) ;
-  coco.showAnns(annos(2)) ;
+  colormap gray ;
+  coco.showAnns(annos) ;
   axis image off ;
 
-  keyboard ;
+  drawnow ;
+  keyboard
 end
-
 
