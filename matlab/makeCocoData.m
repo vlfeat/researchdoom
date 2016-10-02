@@ -2,21 +2,16 @@ function makeCocoData(rdmDir, cocoDir, varargin)
 %MAKECOCODATA   Convert ResearchDoom output to Coco
 %    MAKECOCODATA(RDMDIR, COCODIR) takes the ResearchDoom recording and converst it in
 %    MS Coco format.
-
-% of the pahts are hardcoded below.
-% Please download vlfeat and put the path to the vl_setup file below.
-% The data is assumed to be inside  ../dataset/<runName> where runName is the input argument
-% Please change it below if you have saved it elsewhere.
 %
-% Arguments
-%  runName: dataset/<runName> should contain rgb, depth and objects and log.txt
-%  runId: Used to assign image ids and also the coco format uses run1, run2 folder names
-%  tickSkip: Integer value >= 1 - From the list of ticks we use ticks(1:tickSkip:end)
-%    This is useful when somebody wants only a subset of the data roughly evently spaced out.
-%    Note that this cannot be used for reducing the frame rate directly because ticks aren't all
-%    numbered from 1 to n ... they skip some in the middle.
-
-%run vlfeat/toolbox/vl_setup ; % Hardcoded path
+%    Arguments
+%    `runName`:: dataset/<runName> should contain rgb, depth and objects and log.txt
+%    `runId`:: Used to assign image ids and also the coco format uses run1, run2 folder names
+%    `tickSkip`:: Integer value >= 1 - From the list of ticks we use
+%        ticks(1:tickSkip:end) This is useful when somebody wants only
+%        a subset of the data roughly evently spaced out.  Note that
+%        this cannot be used for reducing the frame rate directly
+%        because ticks aren't all numbered from 1 to n ... they skip
+%        some in the middle.
 
 opts.runId = 1 ;
 opts.runName = 'run1' ;
@@ -32,7 +27,7 @@ rdb = rdmLoad(rdmDir) ;
 mkdir(fullfile(cocoDir,opts.runName)) ;
 
 % Break run in levels.
-parfor levelId = 1:numel(rdb.levels.name)
+for levelId = 1:numel(rdb.levels.name)
   %levelName = rdb.levels.name{levelId} ;
   levelName = sprintf('map%02d', levelId) ;
   qualPath = fullfile(opts.runName, levelName) ;
@@ -76,28 +71,43 @@ parfor levelId = 1:numel(rdb.levels.name)
       '"date_captured":"%s"}\n'], ...
       imageId, fullfile(qualPath, 'rgb', imageName), char(datetime));
 
-    putImage(frame.rgbPath, fullfile(levelDir,'rgb',imageName)) ;
-    putImage(frame.depthmapPath, fullfile(levelDir,'depth',imageName)) ;
-    putImage(frame.objectmapPath, fullfile(levelDir,'objects',imageName)) ;
+    putImage(opts, frame.rgbPath, fullfile(levelDir,'rgb',imageName)) ;
+    putImage(opts, frame.depthmapPath, fullfile(levelDir,'depth',imageName)) ;
+    putImage(opts, frame.objectmapPath, fullfile(levelDir,'objects',imageName)) ;
 
     % Extract all objects from the frame, find polygonal contour,
     % and get a string in  Coco format.
     for i = 1:numel(frame.objects.id)
       mask = (frame.objectmap == frame.objects.frameId(i)) ;
-      mask = imfill(mask,'holes') ;
       area = sum(mask(:)) ;
-      maskUp = imresize(mask,4,'nearest') ;
-      poly = contourc(double(maskUp),[.5 .5]) ;
+      maskUp = imresize(mask, 4, 'nearest') ;
+      polys = bwboundaries(maskUp, 'noholes')
+
       polyTxt = {} ;
-      polyBegin = 1 ;
-      while polyBegin < size(poly,2)
-        polyLength = poly(2,polyBegin) ;
-        polyEnd = polyBegin + polyLength ;
-        onePoly = (poly(:,polyBegin+1:polyEnd)-2.5)/4+1 ;
-        onePoly = round(onePoly + .5) - .5 ;
-        %clf ; imagesc(mask);axis equal ;hold on; plot(onePoly(1,2:end),onePoly(2,2:end),'rx-') ;
-        onePoly = dpsimplify(onePoly',1)' ;
-        txt = cellfun(@(x)sprintf('%.0f',x),num2cell(onePoly(:)-0.5),'uniformoutput',0) ;
+      for p = 1:numel(polys)
+        onePoly_ = polys{p}(:,[2 1])' ;
+        onePoly = (onePoly_-2.5)/4+1 ;
+        onePolySimple = dpsimplify(onePoly',0.25)' ;
+        onePolySimpleRound = round(onePolySimple * 2)/2;
+        onePolyVerySimple = dpsimplify(onePolySimpleRound',0.75)' ;
+        if 0
+          clf ; subplot(1,2,1);
+          imagesc(maskUp==0) ;
+          axis equal ;
+          hold on;
+          plot(onePoly_(1,2:end),onePoly_(2,2:end),'rx-') ;
+          subplot(1,2,2) ;
+          imagesc(mask) ;
+          axis equal ;
+          hold on;
+          %plot(onePoly(1,2:end),onePoly(2,2:end),'rx-') ;
+          %plot(onePolySimple(1,2:end),onePolySimple(2,2:end),'g--') ;
+          %plot(onePolySimpleRound(1,2:end),onePolySimpleRound(2,2:end),'co:') ;
+          plot(onePolyVerySimple(1,2:end),onePolyVerySimple(2,2:end),'wd--');
+          keyboard
+        end
+        txt = cellfun(@(x)sprintf('%.1f',x), ...
+                      num2cell(onePolyVerySimple(:)-0.5),'uniformoutput',0) ;
         polyTxt{end+1} = sprintf('[%s]',strjoin(txt,',')) ;
         polyBegin = polyEnd + 1 ;
       end
@@ -167,9 +177,9 @@ parfor levelId = 1:numel(rdb.levels.name)
   writeText(fullfile(levelDir, 'coco.json'), cocoTxt) ;
 end
 
-function putImage(src,dst)
+function putImage(opts,src,dst)
 if ~exist(dst)
-  if ~ispc
+  if ~ispc && opts.useSymlinks
     system(sprintf('ln -sf %s %s', fullfile(pwd,src), dst)) ;
   else
     copyfile(src, dst) ;
