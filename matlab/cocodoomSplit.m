@@ -1,4 +1,4 @@
-function cocodoomPack()
+function cocodoomSplit()
 %COCODOOMSPLIT   Generate standard Cocodoom splits.
 
 addpath matlab ;
@@ -7,7 +7,7 @@ full = {} ;
 standard = {} ;
 
 % --------------------------------------------------------------------
-% Get episode splits
+% Get map splits
 % --------------------------------------------------------------------
 train = {} ;
 val = {} ;
@@ -25,13 +25,13 @@ for run = 1:1
   end
 end
 
-full{end+1} = cocodoomCombine(train, 'data/cocodoom/episode-full-train.json') ;
-full{end+1} = cocodoomCombine(val,   'data/cocodoom/episode-full-val.json') ;
-full{end+1} = cocodoomCombine(test,  'data/cocodoom/episode-full-test.json') ;
+full{end+1} = cocodoomCombine(train, 'data/cocodoom/map-full-train.json') ;
+full{end+1} = cocodoomCombine(val,   'data/cocodoom/map-full-val.json') ;
+full{end+1} = cocodoomCombine(test,  'data/cocodoom/map-full-test.json') ;
 
-standard{end+1} = cocodoomCombine(train, 'data/cocodoom/episode-train.json', 'skip', 5) ;
-standard{end+1} = cocodoomCombine(val,   'data/cocodoom/episode-val.json',   'skip', 20) ;
-standard{end+1} = cocodoomCombine(test,  'data/cocodoom/episode-test.json',  'skip', 20) ;
+standard{end+1} = cocodoomCombine(train, 'data/cocodoom/map-train.json', 'skip', 5) ;
+standard{end+1} = cocodoomCombine(val,   'data/cocodoom/map-val.json',   'skip', 20) ;
+standard{end+1} = cocodoomCombine(test,  'data/cocodoom/map-test.json',  'skip', 20) ;
 
 % --------------------------------------------------------------------
 % Get player splits

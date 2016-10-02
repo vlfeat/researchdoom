@@ -36,6 +36,7 @@ parfor levelId = 1:numel(rdb.levels.name)
   if exist(fullfile(levelDir, 'coco.json'), 'file')
     fprintf('Skipping level %d because it is already there (%s)\n', ...
             levelId, fullfile(levelDir, 'coco.json')) ;
+    continue ;
   else
     fprintf('Processing level %d\n', levelId) ;
   end
