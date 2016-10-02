@@ -73,15 +73,18 @@ if nargout == 0
   figure(1) ; clf ;
   dx = 320 / 2 ; % half for HDPI (retina) screens
   dy = 200 / 2 ;
-  set(gcf, 'windowstyle', 'normal') ;
-  set(gcf,'units', 'pixels', 'position',[10 400 4*dx dy]) ;
-  objcols = jet(2^8) ;
-  objcols(2^7+1,:) = [1 1 0] ;
-  objcols(2^7+2,:) = [0 1 0] ;
-  objcols(2^7+3,:) = [0 0 1] ;
+  set(gcf, 'windowstyle', 'normal', 'units', 'pixels') ;
+  pos  = get(gcf, 'position') ;
+  pos(3:4) = [4*dx dy] ;
+  set(gcf,'units', 'pixels', 'position', pos) ;
+  set(gcf,'units', 'normalized') ;
+  objcols = colorcube(2^7) ;
+  objcols(2^7+1,:) = [1 1 .3] ;
+  objcols(2^7+2,:) = [.5 1 .3] ;
+  objcols(2^7+3,:) = [.3 .7 1] ;
   depthcols = gray(2^16) ;
 
-  axes('units', 'pixels', 'position',[1 1 dx dy]) ;
+  makeAxes(1,2,1,4,dx,dy) ;
   imagesc(ind2rgb(frame.rgb,frame.rgbcols)) ;
   axis image off ; hold on ;
   h = vl_plotbox(frame.objects.box,'g','label',strings) ;
@@ -92,21 +95,21 @@ if nargout == 0
       'FontSize', 6, ...
       'Margin', 0.1) ;
   end
-  makeText(1,1,dx,dy,sprintf('Appearance and objects (time %06d)', tic)) ;
+  makeText(1,2,1,4,dx,dy,sprintf('Appearance and objects (time %06d)', tic)) ;
 
-  axes('units', 'pixels', 'position',[dx+1, 1, dx, dy]) ;
+  makeAxes(1,1,1,4,dx,dy) ;
   imagesc(ind2rgb(frame.depthmap,depthcols)) ;
   axis image off ;
-  makeText(1,2,dx,dy,'Depth map') ;
+  makeText(1,1,1,4,dx,dy,'Depth map') ;
 
-  axes('units', 'pixels', 'position',[2*dx+1, 1, dx, dy]) ;
+  makeAxes(1,3,1,4,dx,dy) ;
   objmap = bitand(frame.objectmap, 255) ;
   objmap(frame.objectmap >= 2^23) = objmap(frame.objectmap >= 2^23) + 2^7 ;
   imagesc(ind2rgb(objmap,objcols)) ;
   axis image off ;
-  makeText(1,3,dx,dy,'Class and instance segmentation') ;
+  makeText(1,3,1,4,dx,dy,'Class and instance segmentation') ;
 
-  axes('units', 'pixels', 'position',[3*dx+1, 1, dx, dy]) ;
+  makeAxes(1,4,1,4,dx,dy) ;
   levelNumber = max(find(rdb.levels.startTic <= tic)) ;
   levelName = rdb.levels.name{levelNumber} ;
   sel = find(rdb.levels.startTic(levelNumber) <= rdb.player.tic & rdb.player.tic <= tic) ;
@@ -132,16 +135,20 @@ if nargout == 0
   set(gca,'ZTickLabel',[]) ;
   grid on ;
 
-  makeText(1,4,dx,dy,sprintf('Ego-motion (level %s)',levelName)) ;
+  makeText(1,4,1,4,dx,dy,sprintf('Ego-motion (level %s)',levelName)) ;
   drawnow ;
   clear fr ;
 end
 
-function h = makeText(i,j,dx,dy,str)
-pos = [(j-.5)*dx - .4*dx, i*dy-12, .8*dx, 11] ;
+function h = makeAxes(i,j,M,N,dx,dy,str)
+h = axes('units', 'normalized', 'position', ...
+         [((j-1)*dx)/(N*dx), ((i-1)*dy)/(M*dx), 1/N, 1/M]) ;
+
+function h = makeText(i,j,M,N,dx,dy,str)
+pos = [((j-.5)*dx - .4*dx)/(N*dx), (i*dy-12)/(dy), .8/N, 11/(dy)] ;
 h = annotation('textbox', ...
                'String', str, ...
-               'Units', 'pixels', ...
+               'Units', 'normalized', ...
                'Position', pos, ...
                'LineStyle', 'none', ...
                'BackgroundColor', 'w', ...
@@ -150,5 +157,4 @@ h = annotation('textbox', ...
                'FontName', 'AndaleMono', ...
                'Margin', 1, ...
                'VerticalAlignment', 'middle', ...
-               'HorizontalAlignment', 'center', ...
-               'Units', 'pixels') ;
+               'HorizontalAlignment', 'center') ;

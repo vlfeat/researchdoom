@@ -1,4 +1,5 @@
-run ~/src/vlfeat/toolbox/vl_setup ;
+%RDMTEST  Test rdmLoad() and rdmGetFrame()
+
 basePath = '/Users/vedaldi/Data/1427uv01' ;
 basePath = '/Users/vedaldi/Data/ep1-507' ;
 basePath = '/Users/vedaldi/Desktop/doomrecord'  ;
@@ -20,14 +21,11 @@ plot3(x,y,z,'g','linewidth',2) ;
 plot3(x(1),y(1),z(1),'ro','linewidth',4) ;
 axis equal ;
 
-v = VideoWriter('~/Desktop/out3.mp4', 'MPEG-4') ;
+v = VideoWriter('~/Desktop/doom.mp4', 'MPEG-4') ;
 open(v) ;
-for tic = rdb.tics.id(1:min(numel(rdb.tics.id),2e3))
+stop = max(find(rdb.tics.id <= rdb.levels.endTic(2))) ;
+for tic = rdb.tics.id(1:min(numel(rdb.tics.id),stop))
   rdmGetFrame(rdb, tic) ;
   writeVideo(v, getframe(1)) ;
 end
 close(v) ;
-
-
-
-
