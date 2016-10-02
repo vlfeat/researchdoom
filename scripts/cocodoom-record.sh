@@ -18,10 +18,13 @@ function get_lmp() {
 function record() {
     if test -e ${COCODOOM_DIR}/run$1/.done; then return ; fi
     mkdir -p ${COCODOOM_DIR}/run$1
-    ${ENGINE} ${WAD_DIR}/$2.wad \
-              ${COCODOOM_TMPDIR}/lmps/$3.lmp \
-              ${COCODOOM_DIR}/run$1
-    touch ${COCODOOM_DIR}/run$1/.done
+    (
+        set -e
+        ${ENGINE} ${WAD_DIR}/$2.wad \
+            ${COCODOOM_TMPDIR}/lmps/$3.lmp \
+            ${COCODOOM_DIR}/run$1
+        touch ${COCODOOM_DIR}/run$1/.done
+    )
 }
 
 get_lmp 30uvmax3           http://doomedsda.us/lmps/945/1/30uvmax3.zip
