@@ -1,37 +1,37 @@
-addpath coco/MatlabAPI
+%TESTCOCODATA
 
-dataPath = '../datasetCOCOBig' ;
-coco = CocoApi(fullfile(dataPath,'anno2.json')) ;
+opts.cocoPath = 'data/cocodoom/run1/map01/coco.json' ;
+opts.dataPath = 'data/cocodoom' ;
+
+addpath matlab/coco/MatlabAPI
+
+coco = CocoApi(opts.cocoPath) ;
 imageIds = coco.getImgIds() ;
 
 for t = 1:numel(imageIds)
   imageId = imageIds(t) ;
   imageInfo = coco.loadImgs(imageId) ;
   annoIds = coco.getAnnIds('imgIds', imageId) ;
-  annos = coco.loadAnns(annoIds) ;  
-  
+  annos = coco.loadAnns(annoIds) ;
+
   format long
   imageId
   imageInfo
-  
+
   figure(1) ; clf ;
-  
-  
-  subplot(1,4,1);
-  [pixels,cols] = imread(fullfile(dataPath,imageInfo.file_name)) ;
+
+  subplot(2,1,1);
+  [pixels,cols] = imread(fullfile(opts.dataPath,imageInfo.file_name)) ;
   image(ind2rgb(pixels,cols)) ;
-  
-  
-  subplot(1,4,2);
+  axis image off ;
+
+  subplot(2,1,2);
   depth_filename  = strrep(imageInfo.file_name, 'rgb', 'depth');
-  imshow(fullfile(dataPath, depth_filename))
-  
-  coco.showAnns(annos) ;
-  subplot(1,4,3);
-  subplot(1,4,4);
-  axis image ;  
-  
-  pause;
+  imagesc(imread(fullfile(opts.dataPath, depth_filename))) ;
+  coco.showAnns(annos(2)) ;
+  axis image off ;
+
+  keyboard ;
 end
 
 

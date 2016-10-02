@@ -32,14 +32,22 @@ rdb = rdmLoad(rdmDir) ;
 mkdir(fullfile(cocoDir,opts.runName)) ;
 
 % Break run in levels.
-for levelId = 1:numel(rdb.levels.name)
+parfor levelId = 1:numel(rdb.levels.name)
   %levelName = rdb.levels.name{levelId} ;
-  levelName = sprintf('map%02', levelId) ;
+  levelName = sprintf('map%02d', levelId) ;
   qualPath = fullfile(opts.runName, levelName) ;
-  levelDir = fullfile(outPrefix, qualPath) ;
-  vl_xmkdir(fullfile(levelDir, 'rgb')) ;
-  vl_xmkdir(fullfile(levelDir, 'depth')) ;
-  vl_xmkdir(fullfile(levelDir, 'objects')) ;
+  levelDir = fullfile(cocoDir, qualPath) ;
+
+  if exist(fullfile(levelDir, 'coco.json'), 'file')
+    fprintf('Skipping level %d because it is already there (%s)\n', ...
+            levelId, fullfile(levelDir, 'coco.json')) ;
+  else
+    fprintf('Processing level %d\n', levelId) ;
+  end
+
+  mkdir(fullfile(levelDir, 'rgb')) ;
+  mkdir(fullfile(levelDir, 'depth')) ;
+  mkdir(fullfile(levelDir, 'objects')) ;
 
   ticStart = rdb.levels.startTic(levelId) ;
   ticEnd = rdb.levels.endTic(levelId) ;
@@ -50,15 +58,11 @@ for levelId = 1:numel(rdb.levels.name)
   objectTxt = {} ;
 
   % Extract indifidual frames.
-  for tic = tics(1:ticSkip:end)
+  for tic = tics(1:opts.ticSkip:end)
     frame = rdmGetFrame(rdb, tic) ;
 
-    imwrite_if_notexist(frame.rgb,double(frame.rgbcols),fullfile(levelDir,'rgb',imageName)) ;
-    imwrite_if_notexist(frame.depthmap, [], fullfile(levelDir,'depth',imageName)) ;
-    imwrite_if_notexist(frame.objectmap,[], fullfile(levelDir,'objects',imageName)) ;
-
     % Get image entry in Coco format.
-    imageId = 10e8 * runId + 10e6 * levelId + tic ;
+    imageId = 10e8 * opts.runId + 10e6 * levelId + tic ;
     imageName = sprintf('%06d.png', tic) ;
     imageTxt{end+1} = sprintf([...
       '{' ...
@@ -70,7 +74,11 @@ for levelId = 1:numel(rdb.levels.name)
       '"flickr_url":"",' ...
       '"coco_url":"",' ...
       '"date_captured":"%s"}\n'], ...
-      imageId, fullfile(qualPath, 'rgb', imageName), datetime);
+      imageId, fullfile(qualPath, 'rgb', imageName), char(datetime));
+
+    putImage(frame.rgbPath, fullfile(levelDir,'rgb',imageName)) ;
+    putImage(frame.depthmapPath, fullfile(levelDir,'depth',imageName)) ;
+    putImage(frame.objectmapPath, fullfile(levelDir,'objects',imageName)) ;
 
     % Extract all objects from the frame, find polygonal contour,
     % and get a string in  Coco format.
@@ -112,7 +120,7 @@ for levelId = 1:numel(rdb.levels.name)
         box(1),box(2),box(3)-box(1)+1,box(4)-box(2)+1) ;
     end
     fprintf(1, 'Done: run %s, level: %d/%d, tic: %d/%d\n', ...
-      runName, levelId, numel(rdb.levels.name), ...
+      opts.runName, levelId, numel(rdb.levels.name), ...
       tic, max(tics));
   end
 
@@ -141,7 +149,7 @@ for levelId = 1:numel(rdb.levels.name)
     '"contributor":"VGG",' ...
     '"url":"",' ...
     '"date_created":"%s"}'], ...
-    datetime) ;
+    char(datetime)) ;
 
   % MS Coco lincense.
   licenseTxt = '{"id":1,"name":"rdoom","url":""}' ;
@@ -149,7 +157,7 @@ for levelId = 1:numel(rdb.levels.name)
   % MS Coco annotation file.
   cocoTxt = sprintf(...
     '{"info":%s,"images":[%s],"annotations":[%s],"categories":[%s],"licenses":[%s]}', ...
-    infoTxt, imageTxt, objctTxt, catTxt, licenseTxt) ;
+    infoTxt, imageTxt, objectTxt, catTxt, licenseTxt) ;
 
   writeText(fullfile(levelDir, 'images.json'), imageTxt) ;
   writeText(fullfile(levelDir, 'objects.json'), objectTxt) ;
@@ -159,7 +167,16 @@ for levelId = 1:numel(rdb.levels.name)
   writeText(fullfile(levelDir, 'coco.json'), cocoTxt) ;
 end
 
-function imwrite_if_notexist(image, index, name)
+function putImage(src,dst)
+if ~exist(dst)
+  if ~ispc
+    system(sprintf('ln -sf %s %s', fullfile(pwd,src), dst)) ;
+  else
+    copyfile(src, dst) ;
+  end
+end
+
+function imwrite_if_notexist(image, ibndex, name)
 % Write an image file if it doesn't already exist
 % image - matrix of pixel values
 % index - if it is an indexed image, empty otherwise

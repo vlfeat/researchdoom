@@ -1,33 +1,38 @@
 function rdb = rdmLoad(basePath)
+%RDMLOAD   Load ResearchDoom database
+%   RDB = RDMLOAD(BASEPATH) loads the ResearchDoom metadata given the
+%   directory BASEPATH written by the ResearchDoom engine.
+
+% Copyright (c) 2016 Andrea Vedaldi
 
 fid = fopen(fullfile(basePath, 'log.txt'), 'r') ;
 text = fread(fid,+inf,'char=>char')' ;
 fclose(fid) ;
 
+% Get objects.
 tokens = regexp(text, '(\d+) spawn:(\d+) type:(\d+) \[([\d\w]+)\]', ...
-  'tokens', 'dotexceptnewline') ;
+  'tokenExtents', 'dotexceptnewline') ;
 rdb.basePath = basePath ;
-rdb.objects.id = [] ;
-rdb.objects.startTic = [] ;
-rdb.objects.endTic = [];
-rdb.objects.label = [] ;
-rdb.player.tic = [] ;
-rdb.player.position = [] ;
-rdb.player.orientation = [] ;
-
+rdb.objects.id = zeros(1, numel(tokens)) ;
+rdb.objects.startTic = zeros(1, numel(tokens)) ;
+rdb.objects.endTic = zeros(1, numel(tokens)) ;
+rdb.objects.label = zeros(1, numel(tokens)) ;
 for i = 1:numel(tokens)
-  rdb.objects.id(i) = sscanf(tokens{i}{2},'%d') ;
-  rdb.objects.startTic(i) = sscanf(tokens{i}{1},'%d') ;
+  tk = tokens{i} ;
+  rdb.objects.id(i) = sscanf(text(tk(2,1):tk(2,2)),'%d') ;
+  rdb.objects.startTic(i) = sscanf(text(tk(1,1):tk(1,2)),'%d') ;
   rdb.objects.endTic(i) = +inf ;
-  rdb.objects.label(i) = sscanf(tokens{i}{3},'%d') ;
+  rdb.objects.label(i) = sscanf(text(tk(3,1):tk(3,2)),'%d') ;
 end
 
-tokens = regexp(text, '(\d+) remove:(\d+)', 'tokens', 'dotexceptnewline') ;
+tokens = regexp(text, '(\d+) remove:(\d+)', 'tokenExtents', 'dotexceptnewline') ;
 for i = 1:numel(tokens)
-  s = find(rdb.objects.id == sscanf(tokens{i}{2},'%d')) ;
-  rdb.objects.endTic(s) = sscanf(tokens{i}{1},'%d') ;
+  tk = tokens{i} ;
+  s = find(rdb.objects.id == sscanf(text(tk(2,1):tk(2,2)),'%d')) ;
+  rdb.objects.endTic(s) = sscanf(text(tk(1,1):tk(2,1)),'%d') ;
 end
 
+% Get tics.
 names = dir(fullfile(basePath, 'rgb', '*.png')) ;
 names = {names.name} ;
 ids = regexp(names,'\d+', 'match') ;
@@ -35,18 +40,25 @@ for i = 1:numel(ids)
   rdb.tics.id(i) = sscanf(ids{i}{1},'%d') ;
 end
 
-tokens = regexp(text, '(\d+) level loaded: ([\d\w]+)', 'tokens', 'dotexceptnewline') ;
-
+tokens = regexp(text, '(\d+) level loaded: ([\d\w]+)', 'tokenExtents', 'dotexceptnewline') ;
+rdb.levels.name = cell(1,numel(tokens)) ;
+rdb.levels.startTic = zeros(1,numel(tokens)) ;
 for i = 1:numel(tokens)
-  rdb.levels.name{i} = tokens{i}{2} ;
-  rdb.levels.startTic(i) = sscanf(tokens{i}{1},'%d') ;
+  tk = tokens{i} ;
+  rdb.levels.name{i} = text(tk(2,1):tk(2,2)) ;
+  rdb.levels.startTic(i) = sscanf(text(tk(1,1):tk(1,2)),'%d') ;
 end
 rdb.levels.endTic = [rdb.levels.startTic(2:end)-1, max(rdb.tics.id)] ;
 
-tokens = regexp(text, '(\d+) player:([\d-.,]+)', 'tokens', 'dotexceptnewline') ;
+% Get player.
+tokens = regexp(text, '(\d+) player:([\de.,-]+)', 'tokenExtents', 'dotexceptnewline') ;
+rdb.player.tic = zeros(1,numel(tokens)) ;
+rdb.player.position = zeros(3,numel(tokens)) ;
+rdb.player.orientation = zeros(1,numel(tokens)) ;
 for i = 1:numel(tokens)
-  rdb.player.tic(i) = sscanf(tokens{i}{1},'%d') ;
-  xyza = sscanf(tokens{i}{2},'%f,%f,%f,%f') ;
+  tk = tokens{i} ;
+  rdb.player.tic(i) = sscanf(text(tk(1,1):tk(1,2)),'%d') ;
+  xyza = sscanf(text(tk(2,1):tk(2,2)),'%f,%f,%f,%f') ;
   rdb.player.position(:,i) = xyza(1:3) ;
   rdb.player.orientation(i) = xyza(4) ;
 end
@@ -56,7 +68,8 @@ rdb.classes.label = 0:numel(rdb.classes.name)-1 ;
 end
 
 function names = getNames()
-names = {'PLAYER', ...
+names = {...
+  'PLAYER', ...
   'POSSESSED', ...
   'SHOTGUY', ...
   'VILE', ...
