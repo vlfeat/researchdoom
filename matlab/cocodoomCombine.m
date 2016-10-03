@@ -3,6 +3,8 @@ function images = cocodoomCombine(src, dst, varargin)
 opts.skip = 1 ;
 opts = vl_argparse(opts, varargin) ;
 
+fprintf('cocodoomCombine: producing %s\n', dst) ;
+
 srcobj = {} ;
 for i = 1:numel(src)
   srcobj{i} = gason(fileread(src{i})) ;
