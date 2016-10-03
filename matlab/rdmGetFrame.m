@@ -1,4 +1,11 @@
 function frame = rdmGetFrame(rdb, tic)
+%RDMGETFRAME   Get ResearchDoom frame information.
+%   FRAME = RDMGETFRAME(RDB, TIC) extracts the information for
+%   frame TIC from the ReasearchDoom database RDB.
+%
+%   See also: RDMLOAD().
+
+% Copyright (c) 2016 Andrea Vedaldi
 
 frame.rgbPath = fullfile(rdb.basePath, 'rgb', sprintf('%06d.png', tic)) ;
 [frame.rgb,frame.rgbcols] = imread(frame.rgbPath) ;

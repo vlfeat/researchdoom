@@ -17,6 +17,7 @@ opts.runId = 1 ;
 opts.runName = 'run1' ;
 opts.ticSkip = 1 ;
 opts.useSymlinks = true ;
+opts.maps = [] ;
 opts = vl_argparse(opts, varargin) ;
 
 % Load ResearchDoom database.
@@ -27,7 +28,8 @@ rdb = rdmLoad(rdmDir) ;
 mkdir(fullfile(cocoDir,opts.runName)) ;
 
 % Break run in levels.
-parfor levelId = 1:numel(rdb.levels.name)
+if isempty(opts.maps), opts.maps = 1:numel(rdb.levels.name); end
+for levelId = opts.maps
   %levelName = rdb.levels.name{levelId} ;
   levelName = sprintf('map%02d', levelId) ;
   qualPath = fullfile(opts.runName, levelName) ;
@@ -77,7 +79,7 @@ parfor levelId = 1:numel(rdb.levels.name)
     putImage(opts, frame.objectmapPath, fullfile(levelDir,'objects',imageName)) ;
 
     % Extract all objects from the frame, find polygonal contour,
-    % and get a string in  Coco format.
+    % and get a string in Coco format.
     for i = 1:numel(frame.objects.id)
       mask = (frame.objectmap == frame.objects.frameId(i)) ;
       area = sum(mask(:)) ;
@@ -113,6 +115,8 @@ parfor levelId = 1:numel(rdb.levels.name)
       end
       polyTxt = sprintf('[%s]',strjoin(polyTxt,',')) ;
       box = frame.objects.box(:,i)-1 ;
+      % The maximum integer in IEEE double has 18 decimal digits. Here we
+      % use up to 14 digits.
       objectId = imageId * 1e6 + frame.objects.id(i) ;
       objectTxt{end+1} = sprintf([...
         '{' ...

@@ -2,6 +2,8 @@ function rdb = rdmLoad(basePath)
 %RDMLOAD   Load ResearchDoom database
 %   RDB = RDMLOAD(BASEPATH) loads the ResearchDoom metadata given the
 %   directory BASEPATH written by the ResearchDoom engine.
+%
+%   See alos: RDMGETFRAME().
 
 % Copyright (c) 2016 Andrea Vedaldi
 
