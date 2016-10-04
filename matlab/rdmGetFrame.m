@@ -1,4 +1,4 @@
-function frame = rdmGetFrame(rdb, tic)
+function frame = rdmGetFrame(rdb, tic, varargin)
 %RDMGETFRAME   Get ResearchDoom frame information.
 %   FRAME = RDMGETFRAME(RDB, TIC) extracts the information for
 %   frame TIC from the ReasearchDoom database RDB.
@@ -6,6 +6,9 @@ function frame = rdmGetFrame(rdb, tic)
 %   See also: RDMLOAD().
 
 % Copyright (c) 2016 Andrea Vedaldi
+
+opts.layout = [1 4] ;
+opts = vl_argparse(opts, varargin) ;
 
 frame.rgbPath = fullfile(rdb.basePath, 'rgb', sprintf('%06d.png', tic)) ;
 [frame.rgb,frame.rgbcols] = imread(frame.rgbPath) ;
@@ -78,11 +81,11 @@ if nargout == 0
   end
 
   figure(1) ; clf ;
-  dx = 320 / 2 ; % half for HDPI (retina) screens
-  dy = 200 / 2 ;
+  opts.dx = 320 / 2 ; % half for HDPI (retina) screens
+  opts.dy = 200 / 2 ;
   set(gcf, 'windowstyle', 'normal', 'units', 'pixels') ;
   pos  = get(gcf, 'position') ;
-  pos(3:4) = [4*dx dy] ;
+  pos(3:4) = [opts.layout(2)*opts.dx, opts.layout(1)*opts.dy] ;
   set(gcf,'units', 'pixels', 'position', pos) ;
   set(gcf,'units', 'normalized') ;
   objcols = colorcube(2^7) ;
@@ -91,7 +94,7 @@ if nargout == 0
   objcols(2^7+3,:) = [.3 .7 1] ;
   depthcols = gray(2^16) ;
 
-  makeAxes(1,2,1,4,dx,dy) ;
+  makeAxes(opts,2) ;
   imagesc(ind2rgb(frame.rgb,frame.rgbcols)) ;
   axis image off ; hold on ;
   h = vl_plotbox(frame.objects.box,'g','label',strings) ;
@@ -102,21 +105,21 @@ if nargout == 0
       'FontSize', 6, ...
       'Margin', 0.1) ;
   end
-  makeText(1,2,1,4,dx,dy,sprintf('Appearance and objects (time %06d)', tic)) ;
+  makeText(opts,1,sprintf('Appearance and objects (time %06d)', tic)) ;
 
-  makeAxes(1,1,1,4,dx,dy) ;
+  makeAxes(opts,1) ;
   imagesc(ind2rgb(frame.depthmap,depthcols)) ;
   axis image off ;
-  makeText(1,1,1,4,dx,dy,'Depth map') ;
+  makeText(opts,2,'Depth map') ;
 
-  makeAxes(1,3,1,4,dx,dy) ;
+  makeAxes(opts,3) ;
   objmap = bitand(frame.objectmap, 255) ;
   objmap(frame.objectmap >= 2^23) = objmap(frame.objectmap >= 2^23) + 2^7 ;
   imagesc(ind2rgb(objmap,objcols)) ;
   axis image off ;
-  makeText(1,3,1,4,dx,dy,'Class and instance segmentation') ;
+  makeText(opts,3,'Class and instance segmentation') ;
 
-  makeAxes(1,4,1,4,dx,dy) ;
+  makeAxes(opts,4) ;
   levelNumber = max(find(rdb.levels.startTic <= tic)) ;
   levelName = rdb.levels.name{levelNumber} ;
   sel = find(rdb.levels.startTic(levelNumber) <= rdb.player.tic & rdb.player.tic <= tic) ;
@@ -142,17 +145,31 @@ if nargout == 0
   set(gca,'ZTickLabel',[]) ;
   grid on ;
 
-  makeText(1,4,1,4,dx,dy,sprintf('Ego-motion (level %s)',levelName)) ;
+  makeText(opts,4,sprintf('Ego-motion (level %s)',levelName)) ;
   drawnow ;
   clear fr ;
 end
 
-function h = makeAxes(i,j,M,N,dx,dy,str)
+function h = makeAxes(opts,i)
+M = opts.layout(1) ;
+N = opts.layout(2) ;
+j = mod(i-1,N)+1 ;
+i = fix((i-1)/N)+1 ;
+i = M-i+1;
+dx = opts.dx ;
+dy = opts.dy ;
 h = axes('units', 'normalized', 'position', ...
-         [((j-1)*dx)/(N*dx), ((i-1)*dy)/(M*dx), 1/N, 1/M]) ;
+         [((j-1)*dx)/(N*dx), ((i-1)*dy)/(M*dy), 1/N, 1/M]) ;
 
-function h = makeText(i,j,M,N,dx,dy,str)
-pos = [((j-.5)*dx - .4*dx)/(N*dx), (i*dy-12)/(dy), .8/N, 11/(dy)] ;
+function h = makeText(opts,i,str)
+M = opts.layout(1) ;
+N = opts.layout(2) ;
+j = mod(i-1,N)+1 ;
+i = fix((i-1)/N)+1 ;
+i = M-i+1 ;
+dx = opts.dx ;
+dy = opts.dy ;
+pos = [((j-.5)*dx - .4*dx)/(N*dx), (i*dy-12)/(M*dy), .8/N, 11/(M*dy)] ;
 h = annotation('textbox', ...
                'String', str, ...
                'Units', 'normalized', ...
