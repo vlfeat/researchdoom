@@ -1,5 +1,5 @@
 function cocodoomTest()
-%COCODOOMTEST   Gest Cocodoom data
+%COCODOOMTEST   Test the Cocodoom data
 
 addpath matlab ;
 addpath matlab/coco/MatlabAPI ;

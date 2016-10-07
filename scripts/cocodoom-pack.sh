@@ -27,6 +27,8 @@ cocodoom=$(basename "${COCODOOM_DIR}")
     echo >> $tmpfile
     printf "%s\n" $cocodoom/map-{train,val,test}.json >>  $tmpfile
     printf "%s\n" $cocodoom/run-{train,val,test}.json >>  $tmpfile
+    printf "%s\n" $cocodoom/run{1,2,3}/log.txt >>  $tmpfile
+
     echo $tmpfile
     tar zcvhf cocodoom-v${COCODOOM_VER}.tar.gz -T $tmpfile
 )

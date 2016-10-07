@@ -27,9 +27,9 @@ function record() {
     )
 }
 
-get_lmp 30uvmax3           http://doomedsda.us/lmps/945/1/30uvmax3.zip
-get_lmp doom2max13018      http://doomedsda.us/lmps/945/1/lvall-13018.zip
-get_lmp doom2d2allmax_829  http://doomedsda.us/lmps/945/1/lvallx5557.zip
+get_lmp 30uvmax3           http://doomedsda.us/lmps/945/1/30uvmax3.zip     # 1:34:50
+get_lmp doom2max13018      http://doomedsda.us/lmps/945/1/lvall-13018.zip  # 1:30:18
+get_lmp doom2d2allmax_829  http://doomedsda.us/lmps/945/1/lvallx5557.zip   # 55:57
 
 record 1 doom2 30uvmax3
 record 2 doom2 doom2max13018
