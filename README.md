@@ -1,8 +1,12 @@
 # ResearchDoom and CocoDoom
 
-This code release supports the *ResearchDoom* platform. It contains a modified *Doom* engine that can be used to record annotated data from games, some MATLAB functions to easily parse this data, and functions and scripts to reproduce the *CocoDoom* dataset.
+The *ResearchDoom* projects aims at extracting data and ground truth annotations from the Doom game for the purpose of training and evaluating computer vision algorithms. For more information see the project [homepage](http://www.robots.ox.ac.uk/~vgg/research/researchdoom/).
+
+This software package supports the *ResearchDoom* platform. It contains a modified *Doom* engine that can be used to record annotated data from games, some MATLAB functions to easily parse this data, and functions and scripts to reproduce the *CocoDoom* dataset.
 
 > You *do not need* this code if all you want is to use the pre-computed *CocoDoom* data. You need this only if you want to record new data. Some of the MATLAB functions, however, can be useful in general.
+
+The code is made available under a pseudo-BSD [license](COPYING).
 
 ## Installation
 
@@ -12,11 +16,11 @@ This version of ResearchDoom uses a fork of `chocolate-doom` as main engine. Thi
 
 Then:
 
-* Compile the code in `engines/chocolate`. Check the instructions therein to see how.
+* Compile the code in `engines/chocolate`. Check the [instructions therein](http://www.github.com/vlfeat/researchdoom-chocolate) to see how.
 
 * Download the Doom WAD (game) files and store them in e.g. `data/wads`. For CocoDoom, you will need the `doom2.wad` version.
 
-## Recording data
+## Recording game data
 
 Use the script `engines/chocolate/rdm-record.sh` to extract data from recorded gaming sessions. Either record your own game or download wad files from the Internet. Games are recorded as `.lmp` files and are several collections can be found [online](http://doomedsda.us/wad945m240.html). Use:
 
