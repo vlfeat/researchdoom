@@ -10,12 +10,16 @@ cocodoom=$(basename "${COCODOOM_DIR}")
     tmpfile=$cocodoom/files-full.txt
     cd $base
     cat $cocodoom/images-full.txt | sed -e "s/^/$cocodoom\//" > $tmpfile
+    echo >> $tmpfile
     cat $cocodoom/images-full.txt | sed -e "s/^/$cocodoom\//" -e "s/rgb/depth/" >> $tmpfile
+    echo >> $tmpfile
     cat $cocodoom/images-full.txt | sed -e "s/^/$cocodoom\//" -e "s/rgb/objects/" >> $tmpfile
     echo >> $tmpfile
     printf "%s\n" $cocodoom/map-full-{train,val,test}.json >>  $tmpfile
     printf "%s\n" $cocodoom/run-full-{train,val,test}.json >>  $tmpfile
-    echo $tmpfile
+    printf "%s\n" $cocodoom/run{1,2,3}/log.txt >>  $tmpfile
+
+    echo Sourcing files from $tmpfile
     tar zcvhf cocodoom-full-v${COCODOOM_VER}.tar.gz -T $tmpfile
 )
 
@@ -29,7 +33,6 @@ cocodoom=$(basename "${COCODOOM_DIR}")
     printf "%s\n" $cocodoom/run-{train,val,test}.json >>  $tmpfile
     printf "%s\n" $cocodoom/run{1,2,3}/log.txt >>  $tmpfile
 
-    echo $tmpfile
+    echo Sourcing files from $tmpfile
     tar zcvhf cocodoom-v${COCODOOM_VER}.tar.gz -T $tmpfile
 )
-
