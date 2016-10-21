@@ -10,16 +10,27 @@ function frame = rdmGetFrame(rdb, tic, varargin)
 opts.layout = [1 4] ;
 opts = vl_argparse(opts, varargin) ;
 
-frame.rgbPath = fullfile(rdb.basePath, 'rgb', sprintf('%06d.png', tic)) ;
+t = find(rdb.tics.id == tic) ;
+if isempty(t), error('Tic %d not found in RDB', tic) ; end
+
+% Figure out if data layout is basePath/rgb or basePath/map**/rgb.
+mapPath = fullfile(rdb.basePath, sprintf('map%02d', rdb.tics.level(t))) ;
+if exist(mapPath, 'dir')
+  basePath = mapPath ;
+else
+  basePath = rdb.basePath ;
+end
+
+frame.rgbPath = fullfile(basePath, 'rgb', sprintf('%06d.png', tic)) ;
 [frame.rgb,frame.rgbcols] = imread(frame.rgbPath) ;
 frame.rgbcols = single(frame.rgbcols) ;
 
 frame.depthmapPath = fullfile(...
-  rdb.basePath, 'depth', sprintf('%06d.png', tic)) ;
+  basePath, 'depth', sprintf('%06d.png', tic)) ;
 frame.depthmap = imread(frame.depthmapPath) ;
 
 frame.objectmapPath = fullfile(...
-  rdb.basePath, 'objects', sprintf('%06d.png', tic)) ;
+  basePath, 'objects', sprintf('%06d.png', tic)) ;
 frame.objectmap = imread(frame.objectmapPath) ;
 frame.objectmap = ...
     uint32(frame.objectmap(:,:,1)) + ...
@@ -94,6 +105,11 @@ if nargout == 0
   objcols(2^7+3,:) = [.3 .7 1] ;
   depthcols = gray(2^16) ;
 
+  makeAxes(opts,1) ;
+  imagesc(ind2rgb(frame.depthmap,depthcols)) ;
+  axis image off ;
+  makeText(opts,1,'Depth map') ;
+
   makeAxes(opts,2) ;
   imagesc(ind2rgb(frame.rgb,frame.rgbcols)) ;
   axis image off ; hold on ;
@@ -105,12 +121,7 @@ if nargout == 0
       'FontSize', 6, ...
       'Margin', 0.1) ;
   end
-  makeText(opts,1,sprintf('Appearance and objects (time %06d)', tic)) ;
-
-  makeAxes(opts,1) ;
-  imagesc(ind2rgb(frame.depthmap,depthcols)) ;
-  axis image off ;
-  makeText(opts,2,'Depth map') ;
+  makeText(opts,2,sprintf('Appearance and objects (time %06d)', tic)) ;
 
   makeAxes(opts,3) ;
   objmap = bitand(frame.objectmap, 255) ;

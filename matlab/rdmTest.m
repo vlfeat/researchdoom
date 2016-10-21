@@ -25,6 +25,7 @@ plot3(x,y,z,'g','linewidth',2) ;
 plot3(x(1),y(1),z(1),'ro','linewidth',4) ;
 axis equal ;
 
+mkdir(fileparts(opts.moviePath)) ;
 v = VideoWriter(opts.moviePath, 'MPEG-4') ;
 open(v) ;
 stop = max(find(rdb.tics.id <= rdb.levels.endTic(2))) ;

@@ -11,6 +11,19 @@ fid = fopen(fullfile(basePath, 'log.txt'), 'r') ;
 text = fread(fid,+inf,'char=>char')' ;
 fclose(fid) ;
 
+% Get player and tics.
+tokens = regexp(text, '(\d+) player:([\de.,-]+)', 'tokenExtents', 'dotexceptnewline') ;
+rdb.player.tic = zeros(1,numel(tokens)) ;
+rdb.player.position = zeros(3,numel(tokens)) ;
+rdb.player.orientation = zeros(1,numel(tokens)) ;
+for i = 1:numel(tokens)
+  tk = tokens{i} ;
+  rdb.player.tic(i) = sscanf(text(tk(1,1):tk(1,2)),'%d') ;
+  xyza = sscanf(text(tk(2,1):tk(2,2)),'%f,%f,%f,%f') ;
+  rdb.player.position(:,i) = xyza(1:3) ;
+  rdb.player.orientation(i) = xyza(4) ;
+end
+
 % Get objects.
 tokens = regexp(text, '(\d+) spawn:(\d+) type:(\d+) \[([\d\w]+)\]', ...
   'tokenExtents', 'dotexceptnewline') ;
@@ -34,14 +47,7 @@ for i = 1:numel(tokens)
   rdb.objects.endTic(s) = sscanf(text(tk(1,1):tk(2,1)),'%d') ;
 end
 
-% Get tics.
-names = dir(fullfile(basePath, 'rgb', '*.png')) ;
-names = {names.name} ;
-ids = regexp(names,'\d+', 'match') ;
-for i = 1:numel(ids)
-  rdb.tics.id(i) = sscanf(ids{i}{1},'%d') ;
-end
-
+% Get levels.
 tokens = regexp(text, '(\d+) level loaded: ([\d\w]+)', 'tokenExtents', 'dotexceptnewline') ;
 rdb.levels.name = cell(1,numel(tokens)) ;
 rdb.levels.startTic = zeros(1,numel(tokens)) ;
@@ -50,21 +56,30 @@ for i = 1:numel(tokens)
   rdb.levels.name{i} = text(tk(2,1):tk(2,2)) ;
   rdb.levels.startTic(i) = sscanf(text(tk(1,1):tk(1,2)),'%d') ;
 end
-rdb.levels.endTic = [rdb.levels.startTic(2:end)-1, max(rdb.tics.id)] ;
+rdb.levels.endTic = [rdb.levels.startTic(2:end)-1, max(rdb.player.tic)] ;
 
-% Get player.
-tokens = regexp(text, '(\d+) player:([\de.,-]+)', 'tokenExtents', 'dotexceptnewline') ;
-rdb.player.tic = zeros(1,numel(tokens)) ;
-rdb.player.position = zeros(3,numel(tokens)) ;
-rdb.player.orientation = zeros(1,numel(tokens)) ;
-for i = 1:numel(tokens)
-  tk = tokens{i} ;
-  rdb.player.tic(i) = sscanf(text(tk(1,1):tk(1,2)),'%d') ;
-  xyza = sscanf(text(tk(2,1):tk(2,2)),'%f,%f,%f,%f') ;
-  rdb.player.position(:,i) = xyza(1:3) ;
-  rdb.player.orientation(i) = xyza(4) ;
+% Get tics.
+rdb.tics.id = rdb.player.tic ;
+[~,rdb.tics.level] = histc(rdb.tics.id, [rdb.levels.startTic rdb.levels.endTic(end)+1]) ;
+
+if 0
+  ok = false(size(rdb.tics.id)) ;
+  if exist(fullfile(basePath, 'rgb'), 'dir')
+    for i = 1:numel(ok)
+      ok(i) = exist(fullfile(basePath, 'rgb', sprintf('%05.png', rdb.tics.id(i)))) ;
+    end
+  else
+    for i = 1:numel(ok)
+      ok(i) = exist(...
+        fullfile(basePath, sprintf('map%02d', rdb.tics.level(i)), 'rgb', sprintf('%05.png', rdb.tics.id(i))), ...
+        'file') ;
+    end
+  end
+  rdb.tics.id = rdb.tics.id(ok) ;
+  rdb.tics.level = rdb.tics.level(ok) ;
 end
 
+% Get classes.
 rdb.classes.name = getNames() ;
 rdb.classes.label = 0:numel(rdb.classes.name)-1 ;
 end
