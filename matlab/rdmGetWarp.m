@@ -19,15 +19,20 @@ A = inv(A1)*A2 ;
 %   ANGLETOFINESHIFT = 19 ;
 %   FIELDOFVIEW = 2048 ;
 %   doomFov = FIELDOFVIEW / (ANG180/2^ANGLETOFINESHIFT) * pi ;
-% Also note that Doom seem to shift the view center slightly w.r.t.
-% the image center, with the center in correspondence of pixel W/2.
+%
+% Note that Doom seem to shift the view center slightly w.r.t.
+% the image center, as the optical center is at pixel W/2+1.
+%
+% Finally, there is a small correction for the scale due to the fact
+% that doom shifts all angles by a tiny amount when computing the tangent
+% tables.
 
 doomFov = pi/2 ;
 W = size(frame2.depthmap,2) ;
 H = size(frame2.depthmap,1) ;
-scale = tan(doomFov/2) / (W/2) ;
+scale = tan(doomFov/2) / (W/2) * 1.0007 ;
 K = diag([scale -scale 1]) * ...
-  [1 0 -W/2-1 ;
+  [1 0 -W/2-1 ; 
    0 1 -H/2-1 ;
    0 0 1    ] ;
 iK = inv(K) ;
