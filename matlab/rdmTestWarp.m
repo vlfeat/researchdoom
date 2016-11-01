@@ -1,4 +1,4 @@
-function rdmTestWarp(varargin)
+function err = rdmTestWarp(varargin)
 %RDMTESTWARP  Demonstrate RDMGETWARP()
 
 % Copyright (c) 2016 Andrea Vedaldi
@@ -7,8 +7,10 @@ opts.basePath = 'data/doomrecord'  ;
 opts = vl_argparse(opts, varargin) ;
 
 rdb = rdmLoad(opts.basePath) ;
-t1 = rdb.tics.id(400) ;
-t2 = rdb.tics.id(405) ;
+t1 = rdb.tics.id(860) ;
+t2 = rdb.tics.id(865) ;
+%t1 = rdb.tics.id(860) ;
+%t2 = rdb.tics.id(865) ;
 
 f1 = rdmGetFrame(rdb,t1) ;
 f2 = rdmGetFrame(rdb,t2) ;
@@ -21,19 +23,22 @@ for k=1:3
 end
 
 figure(1); clf ;
+err=sqrt(sum((im2_-im2).^2,3)) ;
 subplot(2,2,1) ;imagesc(im1) ;
 subplot(2,2,2) ;imagesc(im2) ;
-subplot(2,2,3) ;imagesc(sqrt(sum((im2_-im2).^2,3))) ;
+subplot(2,2,3) ;imagesc(err,[0 3]) ;
 subplot(2,2,4) ;imagesc(im2_) ;
 
+err = mean(err(~isnan(err(:)))) ;
+
+if 1
 figure(2) ;clf;
 while true
-  clf;
-  imagesc(im2) ;
-  pause(0.1) ;
-  clf;
-  imagesc(im2_) ;
-  pause(0.1) ;
+  clf ; imagesc(im2) ; axis image off ; title('Press any key') ;
+  pause ;
+  clf ; imagesc(im2_) ; axis image off ; title('Press any key') ;
+  pause ;
+end
 end
 
 %keyboard

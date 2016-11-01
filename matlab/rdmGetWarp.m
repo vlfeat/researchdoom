@@ -13,19 +13,29 @@ A1 = getPlayerTransform(frame1) ;
 A2 = getPlayerTransform(frame2) ;
 A = inv(A1)*A2 ;
 
-% Get pixel coordinates in 3D space.
+% Camera matrix.
 % From the Doom source code, the FOV is computed as follows:
 %   ANG180 = sscanf('80000000','%x')  ;
 %   ANGLETOFINESHIFT = 19 ;
 %   FIELDOFVIEW = 2048 ;
 %   doomFov = FIELDOFVIEW / (ANG180/2^ANGLETOFINESHIFT) * pi ;
+% Also note that Doom seem to shift the view center slightly w.r.t.
+% the image center, with the center in correspondence of pixel W/2.
+
 doomFov = pi/2 ;
 W = size(frame2.depthmap,2) ;
 H = size(frame2.depthmap,1) ;
-[u2,v2] = meshgrid(1:W,1:H) ;
 scale = tan(doomFov/2) / (W/2) ;
-x2 =   (u2 - (1+W)/2) * scale ;
-y2 = - (v2 - (1+H)/2) * scale ;
+K = diag([scale -scale 1]) * ...
+  [1 0 -W/2-1 ;
+   0 1 -H/2-1 ;
+   0 0 1    ] ;
+iK = inv(K) ;
+
+% Get pixel coordinates in 3D space.
+[u2,v2] = meshgrid(1:W,1:H) ;
+x2 = K(1,1) * u2 + K(1,2) * v2 + K(1,3) ;
+y2 = K(2,1) * u2 + K(2,2) * v2 + K(2,3) ;
 
 % Get 3D points in camera 2.
 depth = single(frame2.depthmap) / 2^6 ;
@@ -33,7 +43,7 @@ X2 = x2 .* depth ;
 Y2 = y2 .* depth ;
 Z2 = depth ;
 
-% Get 3d points in camera 1.
+% Get 3D points in camera 1.
 X1 = A(1,1) * X2 + A(1,2) * Y2 + A(1,3) * Z2 + A(1,4) ;
 Y1 = A(2,1) * X2 + A(2,2) * Y2 + A(2,3) * Z2 + A(2,4) ;
 Z1 = A(3,1) * X2 + A(3,2) * Y2 + A(3,3) * Z2 + A(3,4) ;
@@ -41,8 +51,8 @@ Z1 = A(3,1) * X2 + A(3,2) * Y2 + A(3,3) * Z2 + A(3,4) ;
 % Project on image 1.
 x1 = X1 ./ Z1 ;
 y1 = Y1 ./ Z1 ;
-u1 =   (x1 / scale) + (1+W)/2 ;
-v1 = - (y1 / scale) + (1+H)/2 ;
+u1 = iK(1,1) * x1 + iK(1,2) * y1 + iK(1,3) ;
+v1 = iK(2,1) * x1 + iK(2,2) * y1 + iK(2,3) ;
 
 % Debug.
 if 0
