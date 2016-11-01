@@ -80,6 +80,11 @@ for i = 1:numel(frame.objects.frameId)
   end
 end
 
+% Get player info.
+i = find(rdb.player.tic == tic) ;
+frame.player.position = rdb.player.position(:,i) ;
+frame.player.orientation = rdb.player.orientation(i) ;
+
 if nargout == 0
 
   strings = {} ;
