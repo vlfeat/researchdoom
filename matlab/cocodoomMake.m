@@ -1,6 +1,6 @@
 function cocodoomMake(rdmDir, cocoDir, varargin)
 %COCODOOMMAKE   Convert ResearchDoom output to Coco
-%    COCODOOMMAKE(RDMDIR, COCODIR) takes the ResearchDoom recording and converst it in
+%    COCODOOMMAKE(RDMDIR, COCODIR) takes the ResearchDoom recording and converts it in
 %    MS Coco format.
 %
 %    Arguments
@@ -8,7 +8,7 @@ function cocodoomMake(rdmDir, cocoDir, varargin)
 %    `runId`:: Used to assign image ids and also the coco format uses run1, run2 folder names
 %    `tickSkip`:: Integer value >= 1 - From the list of ticks we use
 %        ticks(1:tickSkip:end) This is useful when somebody wants only
-%        a subset of the data roughly evently spaced out.  Note that
+%        a subset of the data roughly evenly spaced out.  Note that
 %        this cannot be used for reducing the frame rate directly
 %        because ticks aren't all numbered from 1 to n ... they skip
 %        some in the middle.
@@ -84,7 +84,7 @@ for levelId = opts.maps
       mask = (frame.objectmap == frame.objects.frameId(i)) ;
       area = sum(mask(:)) ;
       maskUp = imresize(mask, 4, 'nearest') ;
-      polys = bwboundaries(maskUp, 'noholes') ;
+      polys = bwboundaries(maskUp, 8, 'noholes') ;
 
       polyTxt = {} ;
       for p = 1:numel(polys)
@@ -125,7 +125,7 @@ for levelId = opts.maps
         '"category_id" : %d,' ...
         '"segmentation" : %s,' ...
         '"area" : %.0f,' ...
-        '"bbox" : [%.0f %.0f %.0f %.0f],' ...
+        '"bbox" : [%.0f,%.0f,%.0f,%.0f],' ...
         '"iscrowd" : 0}\n'], ...
         objectId, ...
         imageId, ...
@@ -139,8 +139,8 @@ for levelId = opts.maps
       tic, max(tics));
   end
 
-  imageTxt = sprintf('%s', strjoin(imageTxt,',')) ;
-  objectTxt = sprintf('%s', strjoin(objectTxt,',')) ;
+  imageTxt = sprintf('[%s]', strjoin(imageTxt,',')) ;
+  objectTxt = sprintf('[%s]', strjoin(objectTxt,',')) ;
 
   % MS Cooco object categories.
   catTxt = {};
@@ -153,7 +153,7 @@ for levelId = opts.maps
       rdb.classes.label(c), ...
       rdb.classes.name{c}) ;
   end
-  catTxt = sprintf('%s', strjoin(catTxt,',')) ;
+  catTxt = sprintf('[%s]', strjoin(catTxt,',')) ;
 
   % MS Coco info.
   infoTxt = sprintf([...
@@ -166,12 +166,12 @@ for levelId = opts.maps
     '"date_created":"%s"}'], ...
     char(datetime)) ;
 
-  % MS Coco lincense.
-  licenseTxt = '{"id":1,"name":"rdoom","url":""}' ;
+  % MS Coco license.
+  licenseTxt = '[{"id":1,"name":"rdoom","url":""}]' ;
 
   % MS Coco annotation file.
   cocoTxt = sprintf(...
-    '{"info":%s,"images":[%s],"annotations":[%s],"categories":[%s],"licenses":[%s]}', ...
+    '{"info":%s,"images":%s,"annotations":%s,"categories":%s,"licenses":%s}', ...
     infoTxt, imageTxt, objectTxt, catTxt, licenseTxt) ;
 
   writeText(fullfile(levelDir, 'images.json'), imageTxt) ;
@@ -185,7 +185,7 @@ end
 function putImage(opts,src,dst)
 if ~exist(dst)
   if ~ispc && opts.useSymlinks
-    system(sprintf('ln -sf %s %s', fullfile(pwd,src), dst)) ;
+    system(sprintf('ln -sf %s %s', src, dst)) ;
   else
     copyfile(src, dst) ;
   end

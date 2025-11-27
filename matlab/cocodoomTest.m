@@ -1,24 +1,26 @@
-function cocodoomTest()
+function cocodoomTest(varargin)
 %COCODOOMTEST   Test the Cocodoom data
+opts = cocodoomPaths() ;
+opts = vl_argparse(opts, varargin) ;
 
 addpath matlab ;
-addpath matlab/coco/MatlabAPI ;
+addpath('matlab/coco/MatlabAPI', '-end') ;
 full = {} ;
 standard = {} ;
 
 stats = {} ;
-stats{end+1} = getStats('data/cocodoom/map-full-train.json') ;
-stats{end+1} = getStats('data/cocodoom/map-full-val.json') ;
-stats{end+1} = getStats('data/cocodoom/map-full-test.json') ;
-stats{end+1} = getStats('data/cocodoom/map-train.json') ;
-stats{end+1} = getStats('data/cocodoom/map-val.json') ;
-stats{end+1} = getStats('data/cocodoom/map-test.json') ;
-stats{end+1} = getStats('data/cocodoom/run-full-train.json') ;
-stats{end+1} = getStats('data/cocodoom/run-full-val.json') ;
-stats{end+1} = getStats('data/cocodoom/run-full-test.json') ;
-stats{end+1} = getStats('data/cocodoom/run-train.json') ;
-stats{end+1} = getStats('data/cocodoom/run-val.json') ;
-stats{end+1} = getStats('data/cocodoom/run-test.json') ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'map-full-train.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'map-full-val.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'map-full-test.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'map-train.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'map-val.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'map-test.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'run-full-train.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'run-full-val.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'run-full-test.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'run-train.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'run-val.json')) ;
+stats{end+1} = getStats(fullfile(opts.dataDir, 'run-test.json')) ;
 stats = horzcat(stats{:}) ;
 
 bar = repmat('-', 1,50);
@@ -42,6 +44,6 @@ function plotAnno(coco,annoId)
 anno = coco.loadAnns(annoId) ;
 imageId = anno.image_id ;
 imag = coco.loadImgs(imageId) ;
-[im,cols] = imread(fullfile('data','cocodoom',imag.file_name)) ;
+[im,cols] = imread(fullfile(opts.dataDir, imag.file_name)) ;
 figure(1) ;clf;image(ind2rgb(im,cols)) ;hold on ; axis image;
 coco.showAnns(anno) ;

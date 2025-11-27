@@ -1,0 +1,3 @@
+name: null
+path: "${data_dir}/wads/${.name}.wad"
+md5: null

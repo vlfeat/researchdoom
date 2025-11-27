@@ -1,0 +1,83 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "rdm",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "rdm.rdm",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "HYDRA_FULL_ERROR": "1",
+        "PYTHONPATH": "${workspaceFolder}/python"
+      },
+      "python": "${workspaceFolder}/python/.venv/bin/python3",
+      "justMyCode": false,
+      "args": [
+        "dataset=cctvdoom_run1",
+        // "dataset=cocodoom_run6",
+      ]
+    },
+    {
+      "name": "rdm_test",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "rdm.rdm_test",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/python"
+      },
+      "python": "${workspaceFolder}/python/.venv/bin/python3",
+      "justMyCode": false,
+      "args": [
+        "--base-path",
+        "/tmp/cocodoom-raw/run1/",
+        "--movie-path",
+        "/tmp/cocodoom-raw/run1.mp4"
+      ]
+    },
+    {
+      "name": "cocodoom_make",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "rdm.cocodoom_make",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/python"
+      },
+      "python": "${workspaceFolder}/python/.venv/bin/python3",
+      "justMyCode": false,
+      "args": [
+        "/tmp/rdm/cocodoom_run1",
+        "${workspaceFolder}/data/cocodoom",
+        "--run-id",
+        "1",
+        "--run-name",
+        "run1"
+      ]
+    },
+    {
+      "name": "cocodoom_combine",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "rdm.cocodoom_combine",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/python"
+      },
+      "python": "${workspaceFolder}/python/.venv/bin/python3",
+      "justMyCode": false,
+      "args": [
+        "${workspaceFolder}/data/cocodoom/run1/map01/coco.json",
+        "${workspaceFolder}/data/cocodoom/run1.json"
+      ]
+    },
+  ]
+}

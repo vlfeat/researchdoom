@@ -1,9 +1,11 @@
 %TESTCOCODATA
+optsPaths = cocodoomPaths() ;
 
-opts.cocoPath = 'data/cocodoom/run1/map04/coco.json' ;
-opts.dataPath = 'data/cocodoom' ;
+opts.cocoPath = fullfile(optsPaths.dataDir, 'run1', 'map04', 'coco.json') ;
+opts.dataPath = optsPaths.dataDir ;
 
-addpath matlab/coco/MatlabAPI
+addpath matlab
+addpath('matlab/coco/MatlabAPI', '-end')
 
 coco = CocoApi(opts.cocoPath) ;
 imageIds = coco.getImgIds() ;

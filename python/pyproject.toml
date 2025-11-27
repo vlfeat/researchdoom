@@ -1,0 +1,22 @@
+[project]
+name = "researchdoom"
+version = "1.0.0"
+description = "Python environment for ResearchDoom tooling"
+readme = "README_python.md"
+requires-python = "==3.11.*"
+dependencies = [
+  "numpy>=1.19.0",
+  "Pillow>=8.0.0",
+  "scipy>=1.5.0",
+  "scikit-image>=0.17.0",
+  "matplotlib>=3.3.0",
+  "av>=12.0.0",
+  "imageio>=2.34.0",
+  "imageio-ffmpeg>=0.5.1",
+  "pycocotools>=2.0.0",
+  "hydra-core>=1.3.0",
+  "omegaconf>=2.3.0",
+]
+
+[tool.uv]
+package = false

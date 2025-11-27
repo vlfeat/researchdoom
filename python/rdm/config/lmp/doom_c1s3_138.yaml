@@ -1,0 +1,8 @@
+defaults:
+  - base
+  - ../wad@_global_.wad: doom-1.9
+  - _self_
+
+name: "doom_c1s3_138"
+url: "https://dsdarchive.com/files/demos/doom/96377/c1s3-138.zip"
+md5: "c371b2438e606316c4594b4b08dbcc7f"

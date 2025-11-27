@@ -1,0 +1,5 @@
+name: null
+path: "${data_dir}/lmps/${.name}.lmp"
+url: null
+md5: null
+md5_archive: null

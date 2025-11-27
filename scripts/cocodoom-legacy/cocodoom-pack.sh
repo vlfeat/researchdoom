@@ -1,7 +1,7 @@
 #!/bin/bash
 
-COCODOOM_VER=1.0
-COCODOOM_DIR=./data/cocodoom
+COCODOOM_VER=1.0.1
+COCODOOM_DIR=./tmp/cocodoom-legacy
 base=$(dirname "${COCODOOM_DIR}")
 cocodoom=$(basename "${COCODOOM_DIR}")
 

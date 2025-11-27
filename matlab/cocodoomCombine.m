@@ -10,6 +10,9 @@ fprintf('cocodoomCombine: producing %s\n', dst) ;
 srcobj = {} ;
 for i = 1:numel(src)
   srcobj{i} = gason(fileread(src{i})) ;
+  srcobj{i}.images = normalizeStructVector(srcobj{i}.images) ;
+  srcobj{i}.annotations = normalizeStructVector(srcobj{i}.annotations) ;
+  srcobj{i}.categories = normalizeStructVector(srcobj{i}.categories) ;
 end
 
 dstobj = srcobj{1} ;
@@ -50,3 +53,6 @@ f = fopen(dst,'w') ; fwrite(f,txt) ; fclose(f) ;
 
 % Return the list of images used.
 images = {dstobj.images.file_name} ;
+
+function items = normalizeStructVector(items)
+items = reshape(items, 1, []) ;

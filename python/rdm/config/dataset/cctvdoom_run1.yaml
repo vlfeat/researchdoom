@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+  - base@dataset
+  - ../lmp@_global_.lmp: doom_e1m1_1080
+  - _self_
+
+engine:
+  fixed_palette: true
+
+dataset:
+  name: "cctvdoom_run1"
+  variants:
+    - name: "egocentric"
+    - name: "camera1"
+      camera: [1024, -3264, 32, 270]
+    - name: "camera2"
+      camera: [2272, -2432, 64, 180]
+    - name: "camera3"
+      camera: [-160, -3232, 132, 0]
+    - name: "camera4"
+      camera: [3360, -3504, 100, 135]
+    - name: "camera5"
+      camera: [2736, -4304, 0, 0]
+    - name: "camera6"
+      camera: [1354, -3128, 49, -147]
+    - name: "camera7"
+      camera: [1255, -2527, 41, -45]
+    - name: "camera8"
+      camera: [1706, -2149, 41, -52]
+    - name: "camera9"
+      camera: [2744, -3212, 41, -18]

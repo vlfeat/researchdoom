@@ -1,0 +1,9 @@
+defaults:
+  - base
+  - ../wad@_global_.wad: doom2-v1.9
+  - _self_
+
+name: "doom2_13018"
+url: "https://dsdarchive.com/files/demos/doom2/26818/lvall-9018.zip"
+md5_archive: "c9a1e16b25dbbf2c29f809360fcf331d"
+md5: "2b317d1036f89e9f8168230f6084a9e5"

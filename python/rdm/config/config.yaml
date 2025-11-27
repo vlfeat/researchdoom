@@ -1,0 +1,26 @@
+defaults:
+  - _self_
+  - dataset: cctv_doom_e1m1_run1
+  - wad: null
+  - lmp: null
+
+engine:
+  path: "engines/chocolate"
+  executable_path: "${.path}/bin/doom"
+  config_path: "${.path}/etc/rdm.cfg"
+  extraconfig_path: "${.path}/etc/rdm-extra.cfg"
+  fixed_palette: false
+
+data_dir: "data"
+temp_dir: "/tmp/rdm-scratch"
+output_dir: "/tmp/rdm"
+verbose: true
+
+# Hydra configuration
+hydra:
+  job:
+    chdir: false  # Don't change working directory
+  run:
+    dir: "${dataset.output_dir}/jobs/${now:%Y-%m-%d-%H-%M-%S}"
+  verbose: true  # Show detailed error messages
+

@@ -1,6 +1,6 @@
 function cocodoomGen(varargin)
 %COCODOOMGEN
-opts.dataDir = 'data' ;
+opts = cocodoomPaths() ;
 opts = vl_argparse(opts, varargin) ;
 
 jobs = struct ;
@@ -16,7 +16,7 @@ end
 parfor i=1:numel(jobs)
   fprintf('### run%d map%d\n',jobs(i).run,jobs(i).map) ;
   runName = sprintf('run%d', jobs(i).run) ;
-  cocodoomMake(fullfile(opts.dataDir, 'cocodoom-raw', runName), ...
-               fullfile(opts.dataDir, 'cocodoom'), ...
+  cocodoomMake(fullfile(opts.rawDataDir, runName), ...
+               fullfile(opts.dataDir), ...
                'runId', jobs(i).run, 'runName', runName, 'maps', jobs(i).map) ;
 end

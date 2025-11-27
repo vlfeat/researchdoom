@@ -1,7 +1,7 @@
 function frame = rdmGetFrame(rdb, tic, varargin)
 %RDMGETFRAME   Get ResearchDoom frame information.
 %   FRAME = RDMGETFRAME(RDB, TIC) extracts the information for
-%   frame TIC from the ReasearchDoom database RDB.
+%   frame TIC from the ResearchDoom database RDB.
 %
 %   See also: RDMLOAD().
 

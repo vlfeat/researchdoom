@@ -1,0 +1,9 @@
+defaults:
+  - base
+  - ../wad@_global_.wad: doom2-v1.9
+  - _self_
+
+name: "doom2_1448"
+url: "https://dsdarchive.com/files/demos/doom2/26831/lvallx1448.zip"
+md5: "7ec31013e9747bf159d5e77f44c3c98b"
+md5_archive: "a10f2a9fff5cc2359ba9ae8cb4dd4a5d"

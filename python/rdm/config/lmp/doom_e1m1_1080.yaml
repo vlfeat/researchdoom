@@ -1,0 +1,8 @@
+defaults:
+  - base
+  - ../wad@_global_.wad: doom-v1.9
+  - _self_
+
+name: "doom_e1m1_1080"
+url: "https://dsdarchive.com/files/demos/doom/104578/e1m1-1080.zip"
+md5: "57ea4d31a5537b14627a11c61af31469"

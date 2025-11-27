@@ -1,0 +1,6 @@
+defaults:
+  - base
+  - _self_
+
+name: "doom2-v1.9"
+md5: 25e1459ca71d321525f84628f45ca8cd

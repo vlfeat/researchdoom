@@ -1,12 +1,14 @@
-function cocodoomGallery()
+function cocodoomGallery(varargin)
 %COCODOOMGALLERY   Produce a gallery of the CocoDoom categories
+opts = cocodoomPaths() ;
+opts = vl_argparse(opts, varargin) ;
 
 addpath matlab ;
-addpath matlab/coco/MatlabAPI ;
+addpath('matlab/coco/MatlabAPI', '-end') ;
 full = {} ;
 standard = {} ;
 
-coco = CocoApi('data/cocodoom/run-train.json') ;
+coco = CocoApi(fullfile(opts.dataDir, 'run-train.json')) ;
 cats = coco.loadCats(coco.getCatIds()) ;
 
 M = 14 ;
@@ -42,7 +44,7 @@ for c = 1:numel(cats)
   i = M-fix((c-1)/N)-1;
   j = mod(c-1,N) ;
   axes('units','normalized','position',[j/N i/M 1/N 1/M]) ;
-  [im,colors] = imread(fullfile('data/cocodoom', img.file_name)) ;
+  [im,colors] = imread(fullfile(opts.dataDir, img.file_name)) ;
   image(ind2rgb(im, colors));
 
   hold on ;
@@ -67,5 +69,5 @@ for c = 1:numel(cats)
   axis image off ;
 end
 
-print -dpdf -r300 data/cocodoom-gallery.pdf
-print -dpng -r300 data/cocodoom-gallery.png
+print('-dpdf', '-r300', fullfile(opts.dataDir, 'cocodoom-gallery.pdf'))
+print('-dpng', '-r300', fullfile(opts.dataDir, 'cocodoom-gallery.png'))

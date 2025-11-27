@@ -9,13 +9,13 @@ function [opts, args] = vl_argparse(opts, args, varargin)
 %   recursively, updating the individual subfields.  This behaviour
 %   can be suppressed by using VL_ARGPARSE(OPTS, ARGS, 'nonrecursive'),
 %   in which case the struct value is copied directly (hence deleting any
-%   existing subfield existing in OPTS). A direct copy occurrs also if the
+%   existing subfield existing in OPTS). A direct copy occurs also if the
 %   struct value in OPTS is a structure with no fields. The nonrecursive
 %   mode is especially useful when a processing time is a concern.
 %
 %   One or more of the (PAR, VAL) pairs in the argument list can be
 %   replaced by a structure; in this case, the fields of the structure
-%   are used as paramater names and the field values as parameter
+%   are used as parameter names and the field values as parameter
 %   values. This behaviour, while orthogonal to structure-valued parameters,
 %   is also disabled in the 'nonrecursive' mode.
 %
@@ -86,7 +86,7 @@ while ai <= numel(args)
     continue ;
   end
 
-  if ~isstr(args{ai})
+  if ~ischar(args{ai})
     error('Expected either a param-value pair or a structure.') ;
   end
 
