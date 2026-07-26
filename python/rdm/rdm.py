@@ -233,6 +233,7 @@ def run_variant(cfg, variant=None):
         str(cfg.engine.config_path),
         "-extraconfig",
         str(cfg.engine.extraconfig_path),
+        "-nosound",
         "-rdm-outdir",
         str(dataset_path),
         "-rdm-hideplayer",

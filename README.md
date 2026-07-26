@@ -99,7 +99,7 @@ Historically, CocoDoom was built on MATLAB rather than Python. You can still run
 ```shell
 brew install octave
 octave --quiet --eval "pkg install -forge image datatypes"
-./scripts/cocodoom-legacy/cocodoom-extract.sh
+./scripts/cocodoom-legacy/cocodoom-generate.sh
 ```
 
 ## Changes
