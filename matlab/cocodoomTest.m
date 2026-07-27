@@ -5,6 +5,7 @@ opts = vl_argparse(opts, varargin) ;
 
 addpath matlab ;
 addpath('matlab/coco/MatlabAPI', '-end') ;
+setupCocoOctave() ;
 full = {} ;
 standard = {} ;
 

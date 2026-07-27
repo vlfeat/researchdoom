@@ -4,6 +4,8 @@ opts.skip = 1 ;
 opts.minArea = 30 ;
 opts.categories = [] ;
 opts = vl_argparse(opts, varargin) ;
+addpath('matlab/coco/MatlabAPI', '-end') ;
+setupCocoOctave() ;
 
 fprintf('cocodoomCombine: producing %s\n', dst) ;
 
@@ -48,7 +50,7 @@ for i = 1:numel(dstobj.images)
 end
 
 % Save the JSON file back.
-txt = gason(dstobj) ;
+txt = formatCocoDocument(dstobj) ;
 f = fopen(dst,'w') ; fwrite(f,txt) ; fclose(f) ;
 
 % Return the list of images used.
@@ -56,3 +58,39 @@ images = {dstobj.images.file_name} ;
 
 function items = normalizeStructVector(items)
 items = reshape(items, 1, []) ;
+end
+
+function txt = formatCocoDocument(obj)
+parts = {
+  sprintf('  "info": %s', jsonCompact(obj.info)), ...
+  sprintf('  "images": %s', jsonArrayOneItemPerLine(obj.images, 2)), ...
+  sprintf('  "annotations": %s', jsonArrayOneItemPerLine(obj.annotations, 2)), ...
+  sprintf('  "categories": %s', jsonArrayOneItemPerLine(obj.categories, 2)), ...
+  sprintf('  "licenses": %s', jsonArrayOneItemPerLine(obj.licenses, 2)) ...
+} ;
+txt = sprintf('{\n%s\n}', strjoin(parts, sprintf(',\n'))) ;
+end
+
+function txt = jsonArrayOneItemPerLine(items, indent)
+prefix = repmat(' ', 1, indent) ;
+itemPrefix = repmat(' ', 1, indent + 2) ;
+
+if isempty(items)
+  txt = '[]' ;
+  return ;
+end
+
+items = reshape(items, 1, []) ;
+itemTxt = cell(1, numel(items)) ;
+for itemIdx = 1:numel(items)
+  itemTxt{itemIdx} = sprintf('%s%s', itemPrefix, jsonCompact(items(itemIdx))) ;
+end
+
+txt = sprintf('[\n%s\n%s]', strjoin(itemTxt, sprintf(',\n')), prefix) ;
+end
+
+function txt = jsonCompact(value)
+txt = gason(value) ;
+end
+
+end

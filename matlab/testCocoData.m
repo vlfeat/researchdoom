@@ -6,6 +6,7 @@ opts.dataPath = optsPaths.dataDir ;
 
 addpath matlab
 addpath('matlab/coco/MatlabAPI', '-end')
+setupCocoOctave()
 
 coco = CocoApi(opts.cocoPath) ;
 imageIds = coco.getImgIds() ;
