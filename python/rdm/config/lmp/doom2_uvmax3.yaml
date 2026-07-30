@@ -1,0 +1,10 @@
+defaults:
+  - base
+  - ../wad@_global_.wad: doom2-v1.9
+  - _self_
+
+name: "doom2_uvmax3"
+url: "https://github.com/vlfeat/researchdoom-lmps/raw/refs/heads/main/30uvmax3.zip"
+original_url: "https://compet-n.gamers.org/index.php?page=download&cndb=1&record_id=4651"
+md5: "2a1a4fe828ff03d96dc413041dd7b9b5"
+md5_archive: "2375cec49f13b4b253588bfc2d7ed82b"

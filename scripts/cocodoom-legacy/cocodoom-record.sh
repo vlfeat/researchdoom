@@ -41,11 +41,11 @@ function record() {
 # record 6 doom2 $url/945/2/30uv1617.zip     # 16:17
 
 # Working equivalent (July 2026)
-url=https://dsdarchive.com/files/demos/doom2
+url1="https://dsdarchive.com/files/demos/doom2/"
 
-record 1 doom2-v1.9 $url/26819/lvall-9450.zip  # 1:34:50
-record 2 doom2-v1.9 $url/26818/lvall-9018.zip  # 1:30:18
-record 3 doom2-v1.9 $url/26813/lvallx5557.zip  # 55:57
-record 4 doom2-v1.9 $url/26828/lvallx1402.zip  # 14:02
-record 5 doom2-v1.9 $url/26831/lvallx1448.zip  # 14:48
-# record 6 doom2-v1.9 $url/26832/lvallx1617.zip  # 16:17 (fails as this run is not for Chocolate Doom)
+record 1 doom2-v1.9 "https://github.com/vlfeat/researchdoom-lmps/raw/refs/heads/main/30uvmax3.zip" # 1:34:50
+record 2 doom2-v1.9 "$url1/26818/lvall-9018.zip"  # 1:30:18
+record 3 doom2-v1.9 "$url1/26813/lvallx5557.zip"  # 55:57
+record 4 doom2-v1.9 "$url1/26828/lvallx1402.zip"  # 14:02
+record 5 doom2-v1.9 "$url1/26831/lvallx1448.zip"  # 14:48
+# record 6 doom2-v1.9 "$url1/26832/lvallx1617.zip"  # 16:17 (fails as this run is not for Chocolate Doom)

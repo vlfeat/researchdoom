@@ -3,7 +3,7 @@ defaults:
   - ../wad@_global_.wad: doom2-v1.9
   - _self_
 
-name: "doom2_1402"
+name: "doom2_lvallx1402"
 url: "https://dsdarchive.com/files/demos/doom2/26828/lvallx1402.zip"
 md5: "1a0bafacf6de4d6085ec49b7e6339740"
 md5_archive: "784036f54e801609b6b72bfb70c18d21"

@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "30uvmax3",
     "addpath",
     "ARACHPLAZ",
     "BOSSBRAIN",
@@ -19,6 +20,7 @@
     "copyfile",
     "datatypes",
     "depthmap",
+    "DOOMEDSDA",
     "dpsimplify",
     "edgecolor",
     "EXTRABFG",
@@ -49,6 +51,8 @@
     "lmps",
     "loadAnns",
     "loadImgs",
+    "lvall",
+    "lvallx",
     "markersize",
     "maxc",
     "maxr",

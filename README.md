@@ -71,7 +71,12 @@ The script `rdm_get_warp.py` contains code to reconstruct the camera matrices fr
 
 ## CocoDoom
 
-To generate the CocoDoom data from scratch, use the script `scripts/cocodoom-generate.sh`. This will generate the CocoDoom data in `/tmp/cocodoom`.
+To generate the CocoDoom data from scratch, use the script `scripts/cocodoom-generate.sh`. This will generate the CocoDoom data in `/tmp/cocodoom`:
+
+```bash
+source python/.venv/bin/activate
+./scripts/cocodoom-generate.sh
+```
 
 Default train-val-test splits are defined as:
 

@@ -1,6 +1,6 @@
 defaults:
   - base
-  - ../lmp@_global_.lmp: doom2_5557
+  - ../lmp@_global_.lmp: doom2_lvallx5557
   - _self_
 
 name: cocodoom_run3
