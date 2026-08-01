@@ -27,7 +27,10 @@ def cocodoom_split(data_dir='data/cocodoom'):
     
     # Copy metadata
     for r in range(1, 4):
-        src = data_dir.parent / 'cocodoom-raw' / f'run{r}' / 'log.txt'
+        raw_root = data_dir.parent / 'cocodoom-raw'
+        src = raw_root / f'cocodoom_run{r}' / 'log.txt'
+        if not src.exists():
+            src = raw_root / f'run{r}' / 'log.txt'
         dst = data_dir / f'run{r}' / 'log.txt'
         if src.exists():
             dst.parent.mkdir(parents=True, exist_ok=True)

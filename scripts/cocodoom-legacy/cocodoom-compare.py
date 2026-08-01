@@ -120,6 +120,12 @@ def load_json(path: Path) -> Any:
         return json.load(handle)
 
 
+def format_json_counterexample(rel_path: str, label: str, items: Counter[str]) -> str:
+    entry = next(iter(items.elements()))
+    pretty = json.dumps(json.loads(entry), sort_keys=True, indent=2)
+    return f"{rel_path}: {label}\n{pretty}"
+
+
 def canonicalize_number(value: Any) -> Any:
     if isinstance(value, bool):
         return value
@@ -247,9 +253,9 @@ def compare_json_list(rel_path: str, left_obj: Any, right_obj: Any) -> list[str]
         f"left-only {sum(only_left.values())}, right-only {sum(only_right.values())})"
     ]
     if only_left:
-        issues.append(f"{rel_path}: left-only sample {next(iter(only_left.elements()))[:240]}")
+        issues.append(format_json_counterexample(rel_path, "left-only entry", only_left))
     if only_right:
-        issues.append(f"{rel_path}: right-only sample {next(iter(only_right.elements()))[:240]}")
+        issues.append(format_json_counterexample(rel_path, "right-only entry", only_right))
     return issues
 
 
@@ -344,9 +350,9 @@ def compare_coco_json(rel_path: str, left_obj: Any, right_obj: Any) -> list[str]
             f"left-only {sum(only_left.values())}, right-only {sum(only_right.values())})"
         )
         if only_left:
-            issues.append(f"{rel_path}: left-only sample {next(iter(only_left.elements()))[:240]}")
+            issues.append(format_json_counterexample(rel_path, "left-only entry", only_left))
         if only_right:
-            issues.append(f"{rel_path}: right-only sample {next(iter(only_right.elements()))[:240]}")
+            issues.append(format_json_counterexample(rel_path, "right-only entry", only_right))
 
     return issues
 
@@ -401,14 +407,24 @@ def print_report(report: CompareReport, limit: int) -> None:
         print(f"  only in right ({len(report.missing_left)}):")
         for rel_path in report.missing_left[:limit]:
             print(f"    {rel_path}")
+        if len(report.missing_left) > limit:
+            remaining = len(report.missing_left) - limit
+            print(f"    ... {remaining} more not shown (increase --limit to see all)")
     if report.missing_right:
         print(f"  only in left ({len(report.missing_right)}):")
         for rel_path in report.missing_right[:limit]:
             print(f"    {rel_path}")
+        if len(report.missing_right) > limit:
+            remaining = len(report.missing_right) - limit
+            print(f"    ... {remaining} more not shown (increase --limit to see all)")
     if report.mismatches:
         print(f"  mismatches ({len(report.mismatches)}):")
         for issue in report.mismatches[:limit]:
-            print(f"    {issue}")
+            for line in issue.splitlines():
+                print(f"    {line}")
+        if len(report.mismatches) > limit:
+            remaining = len(report.mismatches) - limit
+            print(f"    ... {remaining} more not shown (increase --limit to see all)")
 
 
 def main() -> int:
@@ -418,7 +434,7 @@ def main() -> int:
     parser.add_argument(
         "--limit",
         type=int,
-        default=20,
+        default=10_000,
         help="Maximum number of missing/mismatch entries to print per section",
     )
     parser.add_argument(
